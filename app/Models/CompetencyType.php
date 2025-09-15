@@ -12,7 +12,7 @@ class CompetencyType extends Model
         'status'
     ];
 
-     public function jobFamilies(): HasMany
+    public function jobFamilies(): HasMany
     {
         return $this->hasMany(JobFamily::class);
     }

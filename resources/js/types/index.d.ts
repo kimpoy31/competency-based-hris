@@ -31,4 +31,13 @@ export interface JobFamily {
     name: string;
     status: 'active' | 'inactive';
     competency_type?: CompetencyType;
+    competencies?: Competency[];
+}
+
+export interface Competency {
+    id: number;
+    job_family_id: number;
+    name: string;
+    status: 'active' | 'inactive';
+    job_family?: JobFamily;
 }
