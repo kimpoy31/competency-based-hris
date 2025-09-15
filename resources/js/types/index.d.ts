@@ -17,3 +17,18 @@ export interface User {
     updated_at: string;
     // [key: string]: unknown; // This allows for additional properties...
 }
+
+export interface CompetencyType {
+    id: number;
+    name: string;
+    status: 'active' | 'inactive';
+    job_families?: JobFamily[];
+}
+
+export interface JobFamily {
+    id: number;
+    competency_type_id: number;
+    name: string;
+    status: 'active' | 'inactive';
+    competency_type?: CompetencyType;
+}
