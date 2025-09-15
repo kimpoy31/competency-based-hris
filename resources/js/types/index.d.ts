@@ -12,11 +12,9 @@ export interface SharedData {
 
 export interface User {
     id: number;
-    name: string;
-    email: string;
-    avatar?: string;
-    email_verified_at: string | null;
+    username: string;
+    status: 'active' | 'inactive';
     created_at: string;
     updated_at: string;
-    [key: string]: unknown; // This allows for additional properties...
+    // [key: string]: unknown; // This allows for additional properties...
 }
