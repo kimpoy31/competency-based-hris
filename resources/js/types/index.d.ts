@@ -16,6 +16,7 @@ export interface User {
     id: number;
     username: string;
     status: 'active' | 'inactive';
+    deleted_at?: string | null;
     created_at: string;
     updated_at: string;
     roles: Role[];
@@ -29,7 +30,7 @@ export interface Role {
     status: 'active' | 'inactive';
     created_at: string;
     updated_at: string;
-    users?: User[]; // 👈 many-to-many inverse
+    users?: User[];
     pivot?: {
         user_id: number;
         role_id: number;

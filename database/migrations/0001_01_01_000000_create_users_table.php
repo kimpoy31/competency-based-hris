@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignId('created_by')->nullable()
                 ->constrained('users')   // self-referencing foreign key
                 ->nullOnDelete();        // if creator is deleted, set null
+            $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
         });
