@@ -55,7 +55,7 @@ export interface JobFamily {
     competency_type_id: number;
     name: string;
     source: Source;
-    status: 'active' | 'inactive';
+    deleted_at?: string | null;
     competency_type?: CompetencyType;
     competencies?: Competency[];
     user?: User;

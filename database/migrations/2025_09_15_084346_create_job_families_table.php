@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('competency_type_id')->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('source');
-            $table->enum('status',['active','inactive'])->default('active');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
