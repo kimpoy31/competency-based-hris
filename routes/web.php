@@ -28,12 +28,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // COMPETENCY TYPES
     Route::get('/competency-types', [TypesController::class , 'index'])->name('competencies.types.index');
 
-    // COMPETENCIES
-    // Route::get('/competencies/{id}', [CompetencyController::class , 'show'])->name('competencies.show');
-
     // JOB FAMILY
     Route::post('/job-families/store', [JobFamilyController::class , 'store'])->name('job-families.store');
-    Route::get('/job-families/{jobFamily}', [JobFamilyController::class , 'show'])->name('job-families.show');
+    Route::get('/job-families/{jobFamilyId}', [JobFamilyController::class , 'show'])->name('job-families.show');
+
+    // JOB FAMILY -> COMPETENCY
+    Route::get('/job-families/{jobFamilyId}/competencies/create', [CompetencyController::class , 'create'])->name('competencies.create');
 });
 
 // require __DIR__.'/settings.php';

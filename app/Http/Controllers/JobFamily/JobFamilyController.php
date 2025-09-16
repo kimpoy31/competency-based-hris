@@ -27,9 +27,9 @@ class JobFamilyController extends Controller
         ]);
     }
 
-    public function show($jobFamily){
+    public function show($jobFamilyId){
         return Inertia::render('JobFamily/Show',[
-            'jobFamily' => JobFamily::with('competencyType')->with('competencies')->find($jobFamily),
+            'jobFamily' => JobFamily::with('competencyType')->with('competencies')->find($jobFamilyId),
         ]);
     }
 }
