@@ -11,7 +11,11 @@ class TypesController extends Controller
 {
     public function index(){
         return Inertia::render('Competency/Types/Index',[
-            'competencyTypes' => CompetencyType::where('status','active')->with('jobFamilies')->get(),
+            'competencyTypes' => CompetencyType::where('status','active')
+            ->with([
+                'jobFamilies' => function($query) { $query->where('status','active'); } 
+            ])
+            ->get(),
         ]);
     }
 }

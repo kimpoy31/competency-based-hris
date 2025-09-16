@@ -13,6 +13,9 @@ const Index = ({ competencyTypes }: Props) => {
                     <div className="card w-full max-w-5xl bg-base-100 shadow-sm card-md" key={type.id}>
                         <div className="card-body">
                             <h1 className="card-title text-2xl font-bold text-base-content/75 uppercase">{type.name}</h1>
+                            <div className="card-actions">
+                                <button className="btn btn-sm btn-neutral">New Job Family</button>
+                            </div>
                             <div className="overflow-x-auto">
                                 <table className="table">
                                     <tbody>
@@ -20,10 +23,7 @@ const Index = ({ competencyTypes }: Props) => {
                                             type.job_families &&
                                             type.job_families.map((fam) => (
                                                 <tr key={fam.id}>
-                                                    <th>1</th>
-                                                    <td>Cy Ganderton</td>
-                                                    <td>Quality Control Specialist</td>
-                                                    <td>Blue</td>
+                                                    <td>{fam.name}</td>
                                                 </tr>
                                             ))}
                                     </tbody>
