@@ -66,7 +66,7 @@ export interface Competency {
     user_id: number | null;
     job_family_id: number;
     name: string;
-    status: 'active' | 'inactive';
+    deleted_at?: string | null;
     source: Source;
     job_family?: JobFamily;
     user?: User;
