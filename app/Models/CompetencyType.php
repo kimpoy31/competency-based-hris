@@ -5,14 +5,20 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CompetencyType extends Model
 {
+    use SoftDeletes;
+
     protected $fillable = [
         'name',
         'user_id',
         'source',
-        'status',
+    ];
+
+    protected $dates = [
+        'deleted_at', // optional, for clarity
     ];
 
     public function jobFamilies(): HasMany

@@ -43,8 +43,8 @@ export interface CompetencyType {
     id: number;
     user_id: number | null;
     name: string;
-    status: 'active' | 'inactive';
     source: Source;
+    deleted_at?: string | null;
     job_families?: JobFamily[];
     user?: User;
 }

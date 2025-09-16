@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('name');
             $table->string('source');
-            $table->enum('status',['active','inactive'])->default('active');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
