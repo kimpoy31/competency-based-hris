@@ -13,9 +13,11 @@ export const routes = {
         types: {
             index: 'competencies.types.index',
         },
+        show: 'competencies.show',
     },
     jobFamilies: {
         store: 'job-families.store',
+        show: 'job-families.show',
     },
     dashboard: {
         index: 'dashboard',
@@ -32,7 +34,7 @@ export const navRoutes = [
         href: routes.admin.index,
     },
     {
-        name: 'Competency Types',
+        name: 'Manage Competencies',
         href: routes.competencies.types.index,
     },
 ];

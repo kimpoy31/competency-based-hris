@@ -3,7 +3,7 @@ import DisplayEmpty from '@/components/DisplayEmpty';
 import MainLayout from '@/layouts/MainLayout';
 import { routes } from '@/lib/routes';
 import { CompetencyType } from '@/types';
-import { router } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 
 interface Props {
@@ -53,7 +53,7 @@ const Index = ({ competencyTypes }: Props) => {
 
     return (
         <MainLayout>
-            <div className="flex flex-col items-center gap-8">
+            <div className="flex w-full flex-col items-center gap-8">
                 {competencyTypes.map((type) => (
                     <Card>
                         <h1 className="card-title text-2xl font-bold text-base-content/75 uppercase">{type.name}</h1>
@@ -71,12 +71,13 @@ const Index = ({ competencyTypes }: Props) => {
                         {(type.job_families?.length ?? 0) ? (
                             type.job_families &&
                             type.job_families.map((fam) => (
-                                <div
+                                <Link
+                                    href={route(routes.jobFamilies.show, { jobFamily: fam.id })}
                                     key={fam.id}
                                     className="w-full cursor-pointer border-l-6 border-l-primary bg-base-200 p-4 font-semibold uppercase hover:bg-base-300"
                                 >
                                     {fam.name}
-                                </div>
+                                </Link>
                             ))
                         ) : (
                             <DisplayEmpty />

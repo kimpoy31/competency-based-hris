@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Competency\CompetencyController;
 use App\Http\Controllers\Competency\TypesController;
 use App\Http\Controllers\JobFamily\JobFamilyController;
+use App\Models\JobFamily;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -23,12 +25,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // ADMIN
     Route::get('/admin', [AdminController::class , 'index'])->name('admin.index');
 
+    // COMPETENCY TYPES
+    Route::get('/competency-types', [TypesController::class , 'index'])->name('competencies.types.index');
 
     // COMPETENCIES
-    Route::get('/competency-types', [TypesController::class , 'index'])->name('competencies.types.index');
+    // Route::get('/competencies/{id}', [CompetencyController::class , 'show'])->name('competencies.show');
 
     // JOB FAMILY
     Route::post('/job-families/store', [JobFamilyController::class , 'store'])->name('job-families.store');
+    Route::get('/job-families/{jobFamily}', [JobFamilyController::class , 'show'])->name('job-families.show');
 });
 
 // require __DIR__.'/settings.php';

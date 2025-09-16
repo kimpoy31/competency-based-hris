@@ -12,7 +12,7 @@ const MainLayout = ({ children, className }: { children: ReactNode; className?: 
                     </Link>
                 ))}
             </div>
-            <div className={`${className}`}>{children}</div>
+            <div className={`${className} flex w-full justify-center`}>{children}</div>
         </div>
     );
 };

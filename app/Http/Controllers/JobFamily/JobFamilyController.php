@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\JobFamily;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Inertia;
 
 class JobFamilyController extends Controller
 {
@@ -24,9 +25,11 @@ class JobFamilyController extends Controller
             'name' => $validated['name'],
             'source' => $roleName ?? 'system',
         ]);
+    }
 
-        // return back()->withErrors([
-        //     'username' => 'The provided credentials do not match our records.',
-        // ])->onlyInput('username');
+    public function show($jobFamily){
+        return Inertia::render('JobFamily/Show',[
+            'jobFamily' => JobFamily::with('competencyType')->with('competencies')->find($jobFamily),
+        ]);
     }
 }
