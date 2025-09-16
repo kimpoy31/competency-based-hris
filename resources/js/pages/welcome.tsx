@@ -1,5 +1,7 @@
+import MainLayout from '@/layouts/MainLayout';
+
 const welcome = () => {
-    return <div>welcome</div>;
+    return <MainLayout>WELCOME</MainLayout>;
 };
 
 export default welcome;
