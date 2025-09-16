@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Competency\TypesController;
+use App\Http\Controllers\JobFamily\JobFamilyController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -26,6 +27,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // COMPETENCIES
     Route::get('/competency-types', [TypesController::class , 'index'])->name('competencies.types.index');
 
+    // JOB FAMILY
+    Route::post('/job-families/store', [JobFamilyController::class , 'store'])->name('job-families.store');
 });
 
 // require __DIR__.'/settings.php';

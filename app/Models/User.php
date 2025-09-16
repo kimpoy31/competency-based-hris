@@ -65,4 +65,19 @@ class User extends Authenticatable
         return $this->hasMany(User::class, 'created_by');
     }
 
+    public function getPrimaryRole(): ?string
+    {
+        $priority = ['super_admin', 'office_admin', 'employee'];
+
+        $userRoles = $this->roles->pluck('name')->toArray();
+
+        foreach ($priority as $role) {
+            if (in_array($role, $userRoles, true)) {
+                return $role;
+            }
+        }
+
+        return null;
+    }
+
 }

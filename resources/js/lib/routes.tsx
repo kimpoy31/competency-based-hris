@@ -14,6 +14,9 @@ export const routes = {
             index: 'competencies.types.index',
         },
     },
+    jobFamilies: {
+        store: 'job-families.store',
+    },
     dashboard: {
         index: 'dashboard',
     },
