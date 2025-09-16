@@ -66,8 +66,27 @@ export interface Competency {
     user_id: number | null;
     job_family_id: number;
     name: string;
+    definition: string;
     deleted_at?: string | null;
     source: Source;
     job_family?: JobFamily;
     user?: User;
+    behavioral_indicators?: BehavioralIndicator[];
+}
+
+export interface BehavioralIndicator {
+    id: number;
+    proficiency_level_id: number;
+    competency_id: number;
+    definition: string;
+    order: number;
+    competency?: Competency;
+    proficiency_level?: ProficiencyLevel;
+}
+
+export interface ProficiencyLevel {
+    id: number;
+    name: string;
+    level: number;
+    behavioral_indicators?: BehavioralIndicator[];
 }

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Competency extends Model
@@ -14,6 +15,7 @@ class Competency extends Model
         'user_id',
         'job_family_id',
         'name',
+        'definition',
         'source',
     ];
 
@@ -25,5 +27,10 @@ class Competency extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function behavioralIndicators(): HasMany
+    {
+        return $this->hasMany(BehavioralIndicator::class);
     }
 }

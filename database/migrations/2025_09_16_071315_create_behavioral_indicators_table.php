@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('competencies', function (Blueprint $table) {
+        Schema::create('behavioral_indicators', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('job_family_id')->constrained()->onDelete('cascade');
-            $table->string('name');
+            $table->foreignId('proficiency_level_id')->constrained()->onDelete('cascade');
+            $table->foreignId('competency_id')->constrained()->onDelete('cascade');
             $table->text('definition');
-            $table->string('source');
+            $table->integer('order');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('competencies');
+        Schema::dropIfExists('behavioral_indicators');
     }
 };

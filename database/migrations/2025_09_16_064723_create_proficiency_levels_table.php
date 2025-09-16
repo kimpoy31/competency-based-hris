@@ -11,14 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('competencies', function (Blueprint $table) {
+        Schema::create('proficiency_levels', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('job_family_id')->constrained()->onDelete('cascade');
             $table->string('name');
-            $table->text('definition');
-            $table->string('source');
-            $table->softDeletes();
+            $table->integer('level');
             $table->timestamps();
         });
     }
@@ -28,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('competencies');
+        Schema::dropIfExists('proficiency_levels');
     }
 };
