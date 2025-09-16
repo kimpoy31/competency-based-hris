@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('competency_types', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->string('name');
+            $table->string('source');
             $table->enum('status',['active','inactive'])->default('active');
             $table->timestamps();
         });

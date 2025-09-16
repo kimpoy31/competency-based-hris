@@ -9,9 +9,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class JobFamily extends Model
 {
     protected $fillable = [
+        'user_id',
         'competency_type_id',
         'name',
-        'status'
+        'status',
+        'source',
     ];
 
     public function competencyType () : BelongsTo {
@@ -21,5 +23,10 @@ class JobFamily extends Model
     public function competencies(): HasMany
     {
         return $this->hasMany(Competency::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

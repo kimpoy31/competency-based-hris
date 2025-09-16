@@ -18,7 +18,7 @@ class CompetencyTypeSeeder extends Seeder
         foreach ($types as $type) {
             CompetencyType::firstOrCreate(
                 ['name' => $type], // check if type exists
-                ['name' => $type]  // insert if not exists
+                ['name' => $type, 'source' => 'system']  // insert if not exists
             );
         }
     }

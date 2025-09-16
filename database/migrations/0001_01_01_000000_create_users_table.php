@@ -15,7 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('username')->unique();
             $table->string('password');
-            $table->enum('status',['active','inactive'])->default('active');
+            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->foreignId('created_by')->nullable()
+                ->constrained('users')   // self-referencing foreign key
+                ->nullOnDelete();        // if creator is deleted, set null
             $table->rememberToken();
             $table->timestamps();
         });

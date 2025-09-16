@@ -12,7 +12,7 @@ class Competency extends Model
         'job_family_id',
         'name',
         'status',
-        'created_by_role'
+        'source',
     ];
 
     public function jobFamily(): BelongsTo

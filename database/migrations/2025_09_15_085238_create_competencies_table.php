@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('competencies', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('created_by_role')->nullable();
             $table->foreignId('job_family_id')->constrained()->onDelete('cascade');
             $table->string('name');
+            $table->string('source');
             $table->enum('status',['active','inactive'])->default('active');
             $table->timestamps();
         });
