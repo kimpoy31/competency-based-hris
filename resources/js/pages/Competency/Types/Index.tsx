@@ -74,7 +74,7 @@ const Index = ({ competencyTypes }: Props) => {
                                 <Link
                                     href={route(routes.jobFamilies.show, { jobFamilyId: fam.id })}
                                     key={fam.id}
-                                    className="w-full cursor-pointer border-l-6 border-l-primary bg-base-200 p-4 font-semibold uppercase hover:bg-base-300"
+                                    className="w-full cursor-pointer border-l-6 border-l-primary bg-base-100 p-4 font-semibold uppercase shadow transition-all hover:bg-base-200/80"
                                 >
                                     {fam.name}
                                 </Link>

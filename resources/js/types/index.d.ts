@@ -81,6 +81,7 @@ export interface BehavioralIndicator {
     definition: string;
     order: number;
     competency?: Competency;
+    deleted_at?: string | null;
     proficiency_level?: ProficiencyLevel;
 }
 

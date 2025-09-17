@@ -1,6 +1,9 @@
 import Card from '@/components/Card';
+import DisplayEmpty from '@/components/DisplayEmpty';
 import MainLayout from '@/layouts/MainLayout';
-import { JobFamily, ProficiencyLevel } from '@/types';
+import { routes } from '@/lib/routes';
+import { BehavioralIndicator, JobFamily, ProficiencyLevel } from '@/types';
+import { router } from '@inertiajs/react';
 import { useState } from 'react';
 
 interface Props {
@@ -9,14 +12,20 @@ interface Props {
 }
 
 const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
-    const [formData, setFormData] = useState({
-        competencyName: '',
-        competencyDescription: '',
-        proficiency_level_id: null as null | number,
+    const [behavioralIndicators, setBehavioralIndicators] = useState<BehavioralIndicator[]>([]);
+
+    const [competencyFormData, setCompetencyFormData] = useState({
+        name: '',
+        definition: '',
     });
 
-    const resetFormData = () => {
-        setFormData({ competencyName: '', competencyDescription: '', proficiency_level_id: null });
+    const [behavioralIndicatorFormData, setBehavioralIndicatorFormData] = useState({
+        proficiency_level_id: null as null | number,
+        definition: '',
+    });
+
+    const resetBehavioralIndicatorForm = () => {
+        setBehavioralIndicatorFormData({ definition: '', proficiency_level_id: null });
     };
 
     const openBehavioralIndicatorModal = () => {
@@ -24,6 +33,56 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
         if (modal) {
             modal.showModal();
         }
+    };
+    const closeBehavioralIndicatorModal = () => {
+        const modal = document.getElementById('BehavioralIndicatorModal') as HTMLDialogElement | null;
+        if (modal) {
+            modal.close();
+        }
+    };
+
+    const handleBehavioralIndicatorAdd = () => {
+        let categorizedIndicators = behavioralIndicators.filter((bi) => bi.proficiency_level_id === behavioralIndicatorFormData.proficiency_level_id);
+        let order = categorizedIndicators.length + 1;
+
+        const indicator = {
+            id: Date.now(),
+            competency_id: 0,
+            proficiency_level_id: behavioralIndicatorFormData.proficiency_level_id ?? 0,
+            definition: behavioralIndicatorFormData.definition,
+            order,
+        };
+
+        setBehavioralIndicators((prev) => [...prev, indicator]);
+    };
+
+    const handleBehavioralIndicatorUpdate = (id: number, newDefinition: string) => {
+        setBehavioralIndicators((prev) => prev.map((bi) => (bi.id === id ? { ...bi, definition: newDefinition } : bi)));
+    };
+
+    const handleBehavioralIndicatorRemove = (id: number, proficiency_level_id: number) => {
+        setBehavioralIndicators((prev) => {
+            const filtered = prev.filter((bi) => bi.id !== id);
+
+            // re-order remaining indicators in the same proficiency level
+            return filtered.map((bi) => {
+                if (bi.proficiency_level_id === proficiency_level_id) {
+                    return {
+                        ...bi,
+                        order: filtered.filter((x) => x.proficiency_level_id === proficiency_level_id).findIndex((x) => x.id === bi.id) + 1,
+                    };
+                }
+                return bi;
+            });
+        });
+    };
+
+    const handleCompetencyCreate = async () => {
+        await router.post(route(routes.competencies.store), {
+            job_family_id: jobFamily.id,
+            name: competencyFormData.name,
+            definition: competencyFormData.definition,
+        });
     };
 
     return (
@@ -34,37 +93,76 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
                     <h1 className="font-semibold uppercase italic">{jobFamily.competency_type?.name}</h1>
                 </div>
                 <div className="divider my-0"></div>
-                <h1 className="text-lg font-bold text-base-content/75 uppercase">Competency Form</h1>
+                <h1 className="text-lg font-bold text-base-content/75 uppercase">Competency</h1>
                 <fieldset className="fieldset">
                     <legend className="fieldset-legend">Name</legend>
                     <input
                         type="text"
                         className="input lg:input-lg"
-                        value={formData.competencyName}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, competencyName: e.target.value }))}
+                        value={competencyFormData.name}
+                        onChange={(e) => setCompetencyFormData((prev) => ({ ...prev, name: e.target.value }))}
                     />
                 </fieldset>
                 <fieldset className="fieldset max-w-lg">
                     <legend className="fieldset-legend">Definition</legend>
                     <textarea
                         className="textarea w-full lg:textarea-lg"
-                        value={formData.competencyDescription}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, competencyDescription: e.target.value }))}
+                        value={competencyFormData.definition}
+                        onChange={(e) => setCompetencyFormData((prev) => ({ ...prev, definition: e.target.value }))}
                     ></textarea>
                 </fieldset>
+                <div className="mt-4 flex justify-end">
+                    <button onClick={handleCompetencyCreate} className="btn btn-wide btn-neutral" disabled={!competencyFormData.definition || !competencyFormData.name}>
+                        Create Competency
+                    </button>
+                </div>
                 <div className="divider"></div>
                 <h1 className="text-lg font-bold text-base-content/75 uppercase">Behavioral Indicators</h1>
                 <div>
-                    <button className="btn btn-sm btn-neutral" onClick={openBehavioralIndicatorModal}>
-                        New Indicator
+                    <button className="btn btn-sm btn-secondary" onClick={openBehavioralIndicatorModal}>
+                        New Indicator +
                     </button>
                 </div>
                 {proficiencyLevels.map((lvl) => (
-                    <div key={lvl.id} className="rounded-xl bg-base-200 p-4 shadow">
-                        <h1 className="text-xl font-bold text-base-content/75 uppercase">{lvl.name}</h1>
-                        {JSON.stringify(jobFamily)}
+                    <div key={lvl.id} className="my-4">
+                        <h1 className="mb-2 text-xl font-bold text-base-content/75 uppercase">{lvl.name}</h1>
+                        {behavioralIndicators.filter((bi) => bi.proficiency_level_id === lvl.id).length > 0 ? (
+                            behavioralIndicators
+                                .filter((bi) => bi.proficiency_level_id === lvl.id)
+                                .sort((a, b) => a.order - b.order) // keep correct order
+                                .map((indicator) => (
+                                    <div
+                                        className="mb-2 flex cursor-pointer flex-col gap-2 border-l-6 border-l-primary bg-base-100 p-4 shadow hover:bg-base-200/80"
+                                        key={indicator.id}
+                                    >
+                                        <div className="flex items-start gap-4">
+                                            <span className="font-bold">
+                                                {lvl.level}.{indicator.order}
+                                            </span>
+                                            <textarea
+                                                className="textarea w-full"
+                                                value={indicator.definition}
+                                                onChange={(e) => handleBehavioralIndicatorUpdate(indicator.id, e.target.value)}
+                                            />
+                                        </div>
+                                        <button
+                                            className="btn self-end btn-sm btn-error"
+                                            onClick={() => handleBehavioralIndicatorRemove(indicator.id, lvl.id)}
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                ))
+                        ) : (
+                            <DisplayEmpty />
+                        )}
                     </div>
                 ))}
+                <div className="mt-4 flex justify-end">
+                    <button className="btn btn-wide btn-neutral" disabled={!competencyFormData.definition && !competencyFormData.name}>
+                        Save Indicators
+                    </button>
+                </div>
             </Card>
 
             <dialog id="BehavioralIndicatorModal" className="modal">
@@ -76,9 +174,11 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
                             <div
                                 key={lvl.id}
                                 className={`cursor-pointer px-4 py-2 capitalize hover:bg-base-300 ${
-                                    formData.proficiency_level_id === lvl.id ? 'border-2 border-neutral bg-base-300 font-bold' : 'bg-base-300/50'
+                                    behavioralIndicatorFormData.proficiency_level_id === lvl.id
+                                        ? 'border-2 border-neutral bg-base-300 font-bold'
+                                        : 'bg-base-300/50'
                                 }`}
-                                onClick={() => setFormData((prev) => ({ ...prev, proficiency_level_id: lvl.id }))}
+                                onClick={() => setBehavioralIndicatorFormData((prev) => ({ ...prev, proficiency_level_id: lvl.id }))}
                             >
                                 {lvl.name}
                             </div>
@@ -86,17 +186,37 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
                     </fieldset>
                     <fieldset className="fieldset max-w-lg">
                         <legend className="fieldset-legend">Definition</legend>
-                        <textarea className="textarea w-full"></textarea>
+                        <textarea
+                            className="textarea w-full"
+                            value={behavioralIndicatorFormData.definition}
+                            onChange={(e) => setBehavioralIndicatorFormData((prev) => ({ ...prev, definition: e.target.value }))}
+                        ></textarea>
                     </fieldset>
                     <div className="modal-action">
-                        <button className="btn" onClick={resetFormData}>
+                        <button
+                            className="btn"
+                            onClick={() => {
+                                resetBehavioralIndicatorForm();
+                                closeBehavioralIndicatorModal();
+                            }}
+                        >
                             Cancel
                         </button>
-                        <button className="btn btn-neutral">Save</button>
+                        <button
+                            onClick={() => {
+                                handleBehavioralIndicatorAdd();
+                                resetBehavioralIndicatorForm();
+                                closeBehavioralIndicatorModal();
+                            }}
+                            className="btn btn-neutral"
+                            disabled={!behavioralIndicatorFormData.definition || !behavioralIndicatorFormData.proficiency_level_id}
+                        >
+                            Add
+                        </button>
                     </div>
                 </div>
                 <form method="dialog" className="modal-backdrop">
-                    <button onClick={resetFormData}>close</button>
+                    <button onClick={resetBehavioralIndicatorForm}>close</button>
                 </form>
             </dialog>
         </MainLayout>
