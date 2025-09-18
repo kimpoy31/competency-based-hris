@@ -11,10 +11,12 @@ class BehavioralIndicator extends Model
     use SoftDeletes;
     
     protected $fillable = [
+        'user_id',
         'proficiency_level_id',
         'competency_id',
         'definition',
         'order',
+        'source',
     ];
 
     public function competency(): BelongsTo

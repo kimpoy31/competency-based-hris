@@ -76,10 +76,12 @@ export interface Competency {
 
 export interface BehavioralIndicator {
     id: number;
+    user_id: number | null;
     proficiency_level_id: number;
     competency_id: number;
     definition: string;
     order: number;
+    source: Source;
     competency?: Competency;
     deleted_at?: string | null;
     proficiency_level?: ProficiencyLevel;

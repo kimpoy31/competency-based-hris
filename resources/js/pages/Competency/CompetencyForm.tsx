@@ -2,7 +2,7 @@ import Card from '@/components/Card';
 import DisplayEmpty from '@/components/DisplayEmpty';
 import MainLayout from '@/layouts/MainLayout';
 import { routes } from '@/lib/routes';
-import { BehavioralIndicator, JobFamily, ProficiencyLevel } from '@/types';
+import { BehavioralIndicator, JobFamily, ProficiencyLevel, Source } from '@/types';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -47,9 +47,11 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
 
         const indicator = {
             id: Date.now(),
+            user_id: 0,
             competency_id: 0,
             proficiency_level_id: behavioralIndicatorFormData.proficiency_level_id ?? 0,
             definition: behavioralIndicatorFormData.definition,
+            source: 'system' as Source,
             order,
         };
 
@@ -82,6 +84,11 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
             job_family_id: jobFamily.id,
             name: competencyFormData.name,
             definition: competencyFormData.definition,
+            behavioralIndicators: behavioralIndicators.map((bi) => ({
+                proficiency_level_id: bi.proficiency_level_id,
+                definition: bi.definition,
+                order: bi.order,
+            })),
         });
     };
 
@@ -111,18 +118,17 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
                         onChange={(e) => setCompetencyFormData((prev) => ({ ...prev, definition: e.target.value }))}
                     ></textarea>
                 </fieldset>
-                <div className="mt-4 flex justify-end">
-                    <button onClick={handleCompetencyCreate} className="btn btn-wide btn-neutral" disabled={!competencyFormData.definition || !competencyFormData.name}>
-                        Create Competency
-                    </button>
-                </div>
+
                 <div className="divider"></div>
-                <h1 className="text-lg font-bold text-base-content/75 uppercase">Behavioral Indicators</h1>
-                <div>
-                    <button className="btn btn-sm btn-secondary" onClick={openBehavioralIndicatorModal}>
-                        New Indicator +
-                    </button>
+                <div className="flex flex-col justify-between lg:flex-row">
+                    <h1 className="text-lg font-bold text-base-content/75 uppercase">Behavioral Indicators</h1>
+                    <div>
+                        <button className="btn btn-sm btn-secondary" onClick={openBehavioralIndicatorModal}>
+                            New Indicator +
+                        </button>
+                    </div>
                 </div>
+
                 {proficiencyLevels.map((lvl) => (
                     <div key={lvl.id} className="my-4">
                         <h1 className="mb-2 text-xl font-bold text-base-content/75 uppercase">{lvl.name}</h1>
@@ -158,9 +164,14 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
                         )}
                     </div>
                 ))}
-                <div className="mt-4 flex justify-end">
-                    <button className="btn btn-wide btn-neutral" disabled={!competencyFormData.definition && !competencyFormData.name}>
-                        Save Indicators
+                <div className="divider"></div>
+                <div className="mt-4 flex justify-start">
+                    <button
+                        onClick={handleCompetencyCreate}
+                        className="btn btn-wide btn-neutral"
+                        disabled={!competencyFormData.definition || !competencyFormData.name}
+                    >
+                        Create Competency
                     </button>
                 </div>
             </Card>

@@ -56,18 +56,21 @@ const Index = ({ competencyTypes }: Props) => {
             <div className="flex w-full flex-col items-center gap-8">
                 {competencyTypes.map((type) => (
                     <Card>
-                        <h1 className="card-title text-2xl font-bold text-base-content/75 uppercase">{type.name}</h1>
-                        <div className="card-actions">
-                            <button
-                                className="btn btn-sm btn-neutral"
-                                onClick={() => {
-                                    setModalData(type);
-                                    openJobFamilyModal();
-                                }}
-                            >
-                                New Job Family
-                            </button>
+                        <div className="flex flex-col justify-between lg:flex-row">
+                            <h1 className="card-title text-2xl font-bold text-base-content/75 uppercase">{type.name}</h1>
+                            <div className="card-actions">
+                                <button
+                                    className="btn btn-sm btn-neutral"
+                                    onClick={() => {
+                                        setModalData(type);
+                                        openJobFamilyModal();
+                                    }}
+                                >
+                                    New Job Family
+                                </button>
+                            </div>
                         </div>
+
                         {(type.job_families?.length ?? 0) ? (
                             type.job_families &&
                             type.job_families.map((fam) => (

@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('behavioral_indicators', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('proficiency_level_id')->constrained()->onDelete('cascade');
             $table->foreignId('competency_id')->constrained()->onDelete('cascade');
             $table->text('definition');
             $table->integer('order');
+            $table->string('source');
             $table->softDeletes();
             $table->timestamps();
         });

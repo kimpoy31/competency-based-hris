@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\JobFamily;
 
 use App\Http\Controllers\Controller;
+use App\Models\Competency;
 use App\Models\JobFamily;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -27,9 +28,18 @@ class JobFamilyController extends Controller
         ]);
     }
 
-    public function show($jobFamilyId){
-        return Inertia::render('JobFamily/Show',[
-            'jobFamily' => JobFamily::with('competencyType')->with('competencies')->find($jobFamilyId),
+    public function show($jobFamilyId)
+    {
+        $jobFamily = JobFamily::with('competencyType')->findOrFail($jobFamilyId);
+
+        $competencies = Competency::whereIn('source', ['super_admin', 'system'])
+            ->where('job_family_id', $jobFamilyId)
+            ->get();
+
+        return Inertia::render('JobFamily/Show', [
+            'jobFamily' => $jobFamily,
+            'competencies' => $competencies,
         ]);
     }
+
 }

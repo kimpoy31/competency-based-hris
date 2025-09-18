@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Competency;
 
 use App\Http\Controllers\Controller;
+use App\Models\BehavioralIndicator;
 use App\Models\Competency;
 use App\Models\CompetencyType;
 use App\Models\JobFamily;
 use App\Models\ProficiencyLevel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class CompetencyController extends Controller
@@ -21,21 +23,41 @@ class CompetencyController extends Controller
     }
 
     public function store(Request $request) {
-        $validated = $request->validate([
+       $validated = $request->validate([
             'job_family_id' => ['required', 'exists:job_families,id'],
-            'name' => ['required', 'string'],
-            'definition' => ['required', 'string'],
+            'name'          => ['required', 'string'],
+            'definition'    => ['required', 'string'],
+            
+            'behavioralIndicators'   => ['required', 'array'],
+            'behavioralIndicators.*.proficiency_level_id'=> ['required', 'integer', 'exists:proficiency_levels,id'],
+            'behavioralIndicators.*.definition'          => ['required', 'string'],
+            'behavioralIndicators.*.order'               => ['required', 'integer'],
         ]);
 
         $user = Auth::user();
         $roleName = optional($user)->getPrimaryRole();
 
-        Competency::create([
-            'user_id' => $user->id,
-            'job_family_id' => $validated['job_family_id'],
-            'name' => $validated['name'],
-            'definition' => $validated['definition'],
-            'source' => $roleName,
-        ]);
+        DB::transaction(function () use ($validated, $user, $roleName) {
+            $competency = Competency::create([
+                'user_id' => $user->id,
+                'job_family_id' => $validated['job_family_id'],
+                'name' => $validated['name'],
+                'definition' => $validated['definition'],
+                'source' => $roleName,
+            ]);
+
+            foreach ($validated['behavioralIndicators'] as $indicator) {
+                BehavioralIndicator::create([
+                    'user_id' => $user->id,
+                    'proficiency_level_id' => $indicator['proficiency_level_id'],
+                    'competency_id' => $competency->id,
+                    'definition' => $indicator['definition'],
+                    'order' => $indicator['order'],
+                    'source' => $roleName,
+                ]);
+            }
+        });
+
+
     }
 }
