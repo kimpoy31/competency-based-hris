@@ -23,6 +23,10 @@ export const routes = {
         store: 'job-families.store',
         show: 'job-families.show',
     },
+    behavioralIndicators: {
+        update: 'behavioral-indicator.update',
+        delete: 'behavioral-indicator.delete',
+    },
     dashboard: {
         index: 'dashboard',
     },

@@ -20,8 +20,8 @@
     --color-neutral-content: oklch(100% 0 0);
     --color-info: oklch(79.54% 0.103 205.9);
     --color-info-content: oklch(98% 0.019 200.873);
-    --color-success: oklch(76% 0.177 163.223);
-    --color-success-content: oklch(98% 0.018 155.826);
+    --color-success: oklch(60% 0.118 184.704);
+    --color-success-content: oklch(95% 0.051 180.801);
     --color-warning: oklch(88.37% 0.135 79.94);
     --color-warning-content: oklch(27% 0.077 45.635);
     --color-error: oklch(78.66% 0.15 28.47);
@@ -34,4 +34,8 @@
     --border: 1px;
     --depth: 1;
     --noise: 1;
+}
+
+html {
+    @apply bg-base-100/90!;
 }
