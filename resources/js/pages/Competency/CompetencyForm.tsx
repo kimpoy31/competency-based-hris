@@ -2,21 +2,22 @@ import Card from '@/components/Card';
 import DisplayEmpty from '@/components/DisplayEmpty';
 import MainLayout from '@/layouts/MainLayout';
 import { routes } from '@/lib/routes';
-import { BehavioralIndicator, JobFamily, ProficiencyLevel, Source } from '@/types';
+import { BehavioralIndicator, Competency, JobFamily, ProficiencyLevel, Source } from '@/types';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
 
 interface Props {
     jobFamily: JobFamily;
     proficiencyLevels: ProficiencyLevel[];
+    competencyToEdit?: Competency;
 }
 
-const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
-    const [behavioralIndicators, setBehavioralIndicators] = useState<BehavioralIndicator[]>([]);
+const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Props) => {
+    const [behavioralIndicators, setBehavioralIndicators] = useState<BehavioralIndicator[]>(competencyToEdit?.behavioral_indicators ?? []);
 
     const [competencyFormData, setCompetencyFormData] = useState({
-        name: '',
-        definition: '',
+        name: competencyToEdit?.name ?? '',
+        definition: competencyToEdit?.definition ?? '',
     });
 
     const [behavioralIndicatorFormData, setBehavioralIndicatorFormData] = useState({
@@ -92,6 +93,14 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
         });
     };
 
+    const handleCompetencyUpdate = async () => {
+        await router.post(route(routes.competencies.update), {
+            competency_id: competencyToEdit?.id,
+            name: competencyFormData.name,
+            definition: competencyFormData.definition,
+        });
+    };
+
     return (
         <MainLayout>
             <Card>
@@ -118,7 +127,19 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
                         onChange={(e) => setCompetencyFormData((prev) => ({ ...prev, definition: e.target.value }))}
                     ></textarea>
                 </fieldset>
-
+                {competencyToEdit && (
+                    <div className="flex justify-end">
+                        <button
+                            className="btn btn-neutral"
+                            onClick={handleCompetencyUpdate}
+                            disabled={
+                                competencyToEdit.name === competencyFormData.name && competencyToEdit.definition === competencyFormData.definition
+                            }
+                        >
+                            Save Changes
+                        </button>
+                    </div>
+                )}
                 <div className="divider"></div>
                 <div className="flex flex-col justify-between lg:flex-row">
                     <h1 className="text-lg font-bold text-base-content/75 uppercase">Behavioral Indicators</h1>
@@ -164,16 +185,20 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels }: Props) => {
                         )}
                     </div>
                 ))}
-                <div className="divider"></div>
-                <div className="mt-4 flex justify-start">
-                    <button
-                        onClick={handleCompetencyCreate}
-                        className="btn btn-wide btn-neutral"
-                        disabled={!competencyFormData.definition || !competencyFormData.name}
-                    >
-                        Create Competency
-                    </button>
-                </div>
+                {!competencyToEdit && (
+                    <>
+                        <div className="divider"></div>
+                        <div className="mt-4 flex justify-start">
+                            <button
+                                onClick={handleCompetencyCreate}
+                                className="btn btn-wide btn-neutral"
+                                disabled={!competencyFormData.definition || !competencyFormData.name}
+                            >
+                                Create Competency
+                            </button>
+                        </div>
+                    </>
+                )}
             </Card>
 
             <dialog id="BehavioralIndicatorModal" className="modal">

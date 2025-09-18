@@ -30,12 +30,13 @@ const Show = ({ jobFamily, competencies }: Props) => {
                 {(competencies.length ?? 0) > 0 ? (
                     <div className="flex w-full">
                         {competencies.map((competency) => (
-                            <div
+                            <Link
+                                href={route(routes.competencies.edit, { jobFamilyId: jobFamily.id, competencyId: competency.id })}
                                 key={competency.id}
-                                className="mb-2 flex w-full cursor-pointer flex-col gap-2 border-l-6 border-l-primary bg-base-100 p-4 shadow hover:bg-base-200/80"
+                                className="mb-2 flex w-full cursor-pointer flex-col gap-2 border-l-6 border-l-primary bg-base-100 p-4 font-semibold uppercase shadow hover:bg-base-200/80"
                             >
                                 {competency.name}
-                            </div>
+                            </Link>
                         ))}
                     </div>
                 ) : (

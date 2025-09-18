@@ -28,4 +28,9 @@ class BehavioralIndicator extends Model
     {
         return $this->belongsTo(ProficiencyLevel::class);
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
 }

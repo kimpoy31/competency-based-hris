@@ -34,7 +34,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // JOB FAMILY -> COMPETENCY
     Route::get('/job-families/{jobFamilyId}/competencies/form', [CompetencyController::class , 'create'])->name('competencies.create');
+    Route::get('/job-families/{jobFamilyId}/competencies/{competencyId}', [CompetencyController::class , 'edit'])->name('competencies.edit');
     Route::post('/job-families/competency/store', [CompetencyController::class , 'store'])->name('competency.store');
+    Route::post('/job-families/competency/update', [CompetencyController::class , 'update'])->name('competency.update');
 });
 
 // require __DIR__.'/settings.php';

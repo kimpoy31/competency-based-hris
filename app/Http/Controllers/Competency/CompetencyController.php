@@ -22,6 +22,30 @@ class CompetencyController extends Controller
         ]);
     }
 
+    public function edit($jobFamilyId, $competencyId){
+
+        return Inertia::render('Competency/CompetencyForm',[
+            'jobFamily' => JobFamily::with('competencyType')->with('competencies.behavioralIndicators')->find($jobFamilyId),
+            'proficiencyLevels' => ProficiencyLevel::all(),
+            'competencyToEdit' => Competency::with('behavioralIndicators')->find($competencyId)
+        ]);
+    }
+
+    public function update (Request $request) {
+        $validated = $request->validate([
+            'competency_id' =>  ['required', 'integer', 'exists:competencies,id'],
+            'name'          => ['required', 'string'],
+            'definition'    => ['required', 'string'],
+        ]);
+
+        $competency = Competency::find($validated['competency_id']);
+
+        $competency->update([
+            'name' => $validated['name'],
+            'definition' => $validated['definition'],
+        ]);
+    }
+
     public function store(Request $request) {
        $validated = $request->validate([
             'job_family_id' => ['required', 'exists:job_families,id'],
