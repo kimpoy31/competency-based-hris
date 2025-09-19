@@ -23,11 +23,10 @@ class CompetencyController extends Controller
     }
 
     public function edit($jobFamilyId, $competencyId){
-
         return Inertia::render('Competency/CompetencyForm',[
             'jobFamily' => JobFamily::with('competencyType')->with('competencies.behavioralIndicators')->find($jobFamilyId),
-            'proficiencyLevels' => ProficiencyLevel::all(),
-            'competencyToEdit' => Competency::with('behavioralIndicators')->find($competencyId)
+            'proficiencyLevels' => ProficiencyLevel::all(), 
+            'competencyToEdit' => Competency::with('behavioralIndicators')->find($competencyId),
         ]);
     }
 

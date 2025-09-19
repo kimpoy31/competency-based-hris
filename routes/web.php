@@ -42,6 +42,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // BEHAVIORAL INDICATOR
     Route::post('/behavioral-indicator/update', [BehavioralIndicatorController::class , 'update'])->name('behavioral-indicator.update');
     Route::delete('/behavioral-indicator/delete', [BehavioralIndicatorController::class , 'delete'])->name('behavioral-indicator.delete');
+    Route::post('/behavioral-indicator/store', [BehavioralIndicatorController::class , 'store'])->name('behavioral-indicator.store');
 });
 
 // require __DIR__.'/settings.php';

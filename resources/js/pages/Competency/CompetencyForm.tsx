@@ -4,7 +4,7 @@ import MainLayout from '@/layouts/MainLayout';
 import { routes } from '@/lib/routes';
 import { BehavioralIndicator, Competency, JobFamily, ProficiencyLevel, Source } from '@/types';
 import { router } from '@inertiajs/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Props {
     jobFamily: JobFamily;
@@ -16,6 +16,12 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
     const [behavioralIndicators, setBehavioralIndicators] = useState<BehavioralIndicator[]>(competencyToEdit?.behavioral_indicators ?? []);
     const [indicatorToRemove, setIndicatorToRemove] = useState<null | BehavioralIndicator>(null);
     const modalIds = { behavioralIndicatorModal: 'behavioralIndicatorModal', deleteBehavioralIndicatorModal: 'deleteBehavioralIndicatorModal' };
+
+    useEffect(() => {
+        if (competencyToEdit?.behavioral_indicators) {
+            setBehavioralIndicators(competencyToEdit?.behavioral_indicators);
+        }
+    }, [competencyToEdit]);
 
     const [competencyFormData, setCompetencyFormData] = useState({
         name: competencyToEdit?.name ?? '',
@@ -45,7 +51,21 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
         }
     };
 
-    const handleBehavioralIndicatorAdd = () => {
+    const handleBehavioralIndicatorAdd = async () => {
+        if (competencyToEdit) {
+            await router.post(
+                route(routes.behavioralIndicators.store),
+                {
+                    competency_id: competencyToEdit.id,
+                    proficiency_level_id: behavioralIndicatorFormData.proficiency_level_id ?? 0,
+                    definition: behavioralIndicatorFormData.definition,
+                },
+                { preserveScroll: true },
+            );
+
+            return;
+        }
+
         let categorizedIndicators = behavioralIndicators.filter((bi) => bi.proficiency_level_id === behavioralIndicatorFormData.proficiency_level_id);
         let order = categorizedIndicators.length + 1;
 
@@ -219,13 +239,15 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                                                 >
                                                     Remove
                                                 </button>
-                                                <button
-                                                    className="btn self-end btn-sm btn-success"
-                                                    disabled={indicatorSaveIsDisabled}
-                                                    onClick={() => handleIndicatorUpdate(indicator.id)}
-                                                >
-                                                    Save
-                                                </button>
+                                                {competencyToEdit && (
+                                                    <button
+                                                        className="btn self-end btn-sm btn-success"
+                                                        disabled={indicatorSaveIsDisabled}
+                                                        onClick={() => handleIndicatorUpdate(indicator.id)}
+                                                    >
+                                                        Save
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     );

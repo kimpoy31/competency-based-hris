@@ -5,6 +5,7 @@ namespace App\Http\Controllers\BehavioralIndicator;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\BehavioralIndicator;
+use Illuminate\Support\Facades\Auth;
 
 class BehavioralIndicatorController extends Controller
 {
@@ -39,5 +40,27 @@ class BehavioralIndicatorController extends Controller
                 'order' => $index + 1
             ]);
         }        
+    }      
+
+    public function store(Request $request){
+        $validated = $request->validate([
+            'competency_id' =>  ['required', 'integer', 'exists:competencies,id'],
+            'proficiency_level_id' =>  ['required', 'integer', 'exists:proficiency_levels,id'],
+            'definition'    => ['required', 'string'],
+        ]);
+
+        $user = Auth::user();
+        $activeIndicatorCount = BehavioralIndicator::where('competency_id',$validated['competency_id'])
+            ->where('proficiency_level_id',$validated['proficiency_level_id'])
+            ->count();
+
+        $indicator = BehavioralIndicator::create([
+            'user_id' => $user->id,
+            'proficiency_level_id' => $validated['proficiency_level_id'],
+            'competency_id' => $validated['competency_id'],
+            'definition' => $validated['definition'],
+            'order' => $activeIndicatorCount + 1,
+            'source' => optional($user)->getPrimaryRole(),
+        ]);
     }      
 }
