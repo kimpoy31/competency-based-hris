@@ -3,8 +3,28 @@ import DisplayEmpty from '@/components/DisplayEmpty';
 import MainLayout from '@/layouts/MainLayout';
 import { routes } from '@/lib/routes';
 import { BehavioralIndicator, Competency, JobFamily, ProficiencyLevel, Source } from '@/types';
+
+import { closestCenter, DndContext, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
+import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { router } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
+
+// Moved SortableIndicator outside the main component to prevent re-rendering issues
+const SortableIndicator = memo(({ indicator, children }: { indicator: BehavioralIndicator; children: React.ReactNode }) => {
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: indicator.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    return (
+        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+            {children}
+        </div>
+    );
+});
 
 interface Props {
     jobFamily: JobFamily;
@@ -16,6 +36,9 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
     const [behavioralIndicators, setBehavioralIndicators] = useState<BehavioralIndicator[]>(competencyToEdit?.behavioral_indicators ?? []);
     const [indicatorToRemove, setIndicatorToRemove] = useState<null | BehavioralIndicator>(null);
     const modalIds = { behavioralIndicatorModal: 'behavioralIndicatorModal', deleteBehavioralIndicatorModal: 'deleteBehavioralIndicatorModal' };
+
+    const [isReordering, setIsReordering] = useState(false);
+    const sensors = useSensors(useSensor(PointerSensor));
 
     useEffect(() => {
         if (competencyToEdit?.behavioral_indicators) {
@@ -39,16 +62,12 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
 
     const openModal = (modalId: string) => {
         const modal = document.getElementById(modalId) as HTMLDialogElement | null;
-        if (modal) {
-            modal.showModal();
-        }
+        if (modal) modal.showModal();
     };
 
     const closeModal = (modalId: string) => {
         const modal = document.getElementById(modalId) as HTMLDialogElement | null;
-        if (modal) {
-            modal.close();
-        }
+        if (modal) modal.close();
     };
 
     const handleBehavioralIndicatorAdd = async () => {
@@ -62,7 +81,6 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                 },
                 { preserveScroll: true },
             );
-
             return;
         }
 
@@ -151,6 +169,27 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
         });
     };
 
+    const saveReorderedIndicator = async (proficiencyLevelId: number) => {
+        if (!competencyToEdit) {
+            return;
+        }
+        // Get indicators for this specific proficiency level
+        const levelIndicators = behavioralIndicators.filter((bi) => bi.proficiency_level_id === proficiencyLevelId).sort((a, b) => a.order - b.order);
+
+        // Extract just the IDs in the current order
+        const orderedIds = levelIndicators.map((indicator) => indicator.id);
+
+        // Send to backend
+        await router.post(
+            route(routes.behavioralIndicators.reorder),
+            {
+                proficiency_level_id: proficiencyLevelId,
+                ordered_ids: orderedIds,
+            },
+            { preserveScroll: true },
+        );
+    };
+
     return (
         <MainLayout>
             <Card>
@@ -193,7 +232,36 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                 <div className="divider"></div>
                 <div className="flex flex-col justify-between lg:flex-row">
                     <h1 className="text-lg font-bold text-base-content/75 uppercase">Behavioral Indicators</h1>
-                    <div>
+                    <div className="flex gap-1">
+                        {!isReordering ? (
+                            <button className="btn btn-outline btn-sm" onClick={() => setIsReordering(true)}>
+                                Reorder
+                            </button>
+                        ) : (
+                            <>
+                                <button
+                                    className="btn btn-sm btn-success"
+                                    onClick={async () => {
+                                        // Save order for each proficiency level
+                                        for (const level of proficiencyLevels) {
+                                            await saveReorderedIndicator(level.id);
+                                        }
+                                        setIsReordering(false);
+                                    }}
+                                >
+                                    Save Order
+                                </button>
+                                <button
+                                    className="btn btn-sm"
+                                    onClick={() => {
+                                        setBehavioralIndicators(competencyToEdit?.behavioral_indicators ?? []);
+                                        setIsReordering(false);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                            </>
+                        )}
                         <button
                             className="btn btn-sm btn-secondary"
                             onClick={() => {
@@ -205,58 +273,103 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                     </div>
                 </div>
 
-                {proficiencyLevels.map((lvl) => (
-                    <div key={lvl.id} className="my-4">
-                        <h1 className="mb-2 text-xl font-bold text-base-content/75 uppercase">{lvl.name}</h1>
-                        {behavioralIndicators.filter((bi) => bi.proficiency_level_id === lvl.id).length > 0 ? (
-                            behavioralIndicators
-                                .filter((bi) => bi.proficiency_level_id === lvl.id)
-                                .sort((a, b) => a.order - b.order) // keep correct order
-                                .map((indicator) => {
-                                    let indicatorFromDb = competencyToEdit?.behavioral_indicators?.find((bi) => bi.id === indicator.id);
-                                    let editedIndicator = behavioralIndicators.find((bi) => bi.id === indicator.id);
-                                    let indicatorSaveIsDisabled = indicatorFromDb?.definition === editedIndicator?.definition;
+                {proficiencyLevels.map((lvl) => {
+                    const indicators = behavioralIndicators.filter((bi) => bi.proficiency_level_id === lvl.id).sort((a, b) => a.order - b.order);
 
-                                    return (
-                                        <div
-                                            className="mb-2 flex cursor-pointer flex-col gap-2 border-l-6 border-l-primary bg-base-100 p-4 shadow hover:bg-base-200/80"
-                                            key={indicator.id}
-                                        >
-                                            <div className="flex items-start gap-4">
-                                                <span className="font-bold">
-                                                    {lvl.level}.{indicator.order}
-                                                </span>
-                                                <textarea
-                                                    className="textarea w-full"
-                                                    value={indicator.definition}
-                                                    onChange={(e) => handleBehavioralIndicatorUpdate(indicator.id, e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="flex justify-end gap-1">
-                                                <button
-                                                    className="btn self-end btn-sm btn-error"
-                                                    onClick={() => handleBehavioralIndicatorRemove(indicator.id, lvl.id)}
-                                                >
-                                                    Remove
-                                                </button>
-                                                {competencyToEdit && (
-                                                    <button
-                                                        className="btn self-end btn-sm btn-success"
-                                                        disabled={indicatorSaveIsDisabled}
-                                                        onClick={() => handleIndicatorUpdate(indicator.id)}
-                                                    >
-                                                        Save
-                                                    </button>
-                                                )}
-                                            </div>
-                                        </div>
-                                    );
-                                })
-                        ) : (
-                            <DisplayEmpty />
-                        )}
-                    </div>
-                ))}
+                    return (
+                        <div key={lvl.id} className="my-4">
+                            <h1 className="mb-2 text-xl font-bold text-base-content/75 uppercase">{lvl.name}</h1>
+
+                            <DndContext
+                                sensors={sensors}
+                                collisionDetection={closestCenter}
+                                onDragEnd={({ active, over }) => {
+                                    if (!isReordering || !over || active.id === over.id) return;
+
+                                    setBehavioralIndicators((items) => {
+                                        const activeIndicator = items.find((i) => i.id === active.id);
+                                        const overIndicator = items.find((i) => i.id === over.id);
+
+                                        if (!activeIndicator || !overIndicator || activeIndicator.proficiency_level_id !== lvl.id) {
+                                            return items;
+                                        }
+
+                                        const sameLevelIndicators = items
+                                            .filter((i) => i.proficiency_level_id === lvl.id)
+                                            .sort((a, b) => a.order - b.order);
+
+                                        const oldIndex = sameLevelIndicators.findIndex((i) => i.id === active.id);
+                                        const newIndex = sameLevelIndicators.findIndex((i) => i.id === over.id);
+
+                                        const reordered = arrayMove(sameLevelIndicators, oldIndex, newIndex).map((i, idx) => ({
+                                            ...i,
+                                            order: idx + 1,
+                                        }));
+
+                                        return items.map((i) => (i.proficiency_level_id === lvl.id ? reordered.find((r) => r.id === i.id)! : i));
+                                    });
+                                }}
+                            >
+                                <SortableContext items={indicators.map((bi) => bi.id)} strategy={verticalListSortingStrategy}>
+                                    {indicators.length > 0 ? (
+                                        indicators.map((indicator) => {
+                                            let originalIndicatorFromDb = competencyToEdit?.behavioral_indicators?.find((i) => i.id === indicator.id);
+
+                                            return (
+                                                <SortableIndicator key={indicator.id} indicator={indicator}>
+                                                    <div className="mb-2 flex flex-col gap-2 border-l-6 border-l-primary bg-base-100 p-4 shadow">
+                                                        <div className="flex items-start gap-4">
+                                                            <span className="font-bold">
+                                                                {lvl.level}.{indicator.order}
+                                                            </span>
+                                                            <textarea
+                                                                className="textarea w-full"
+                                                                value={indicator.definition}
+                                                                disabled={isReordering}
+                                                                onChange={(e) => handleBehavioralIndicatorUpdate(indicator.id, e.target.value)}
+                                                                onPointerDown={(e) => {
+                                                                    !isReordering && e.stopPropagation();
+                                                                }}
+                                                            />
+                                                        </div>
+                                                        {!isReordering && (
+                                                            <div className="flex justify-end gap-1">
+                                                                <button
+                                                                    className="btn btn-sm btn-error"
+                                                                    onClick={() => handleBehavioralIndicatorRemove(indicator.id, lvl.id)}
+                                                                    onPointerDown={(e) => {
+                                                                        !isReordering && e.stopPropagation();
+                                                                    }}
+                                                                >
+                                                                    Remove
+                                                                </button>
+                                                                {competencyToEdit && (
+                                                                    <button
+                                                                        className="btn btn-sm btn-success"
+                                                                        onClick={() => handleIndicatorUpdate(indicator.id)}
+                                                                        disabled={indicator.definition === originalIndicatorFromDb?.definition}
+                                                                        onPointerDown={(e) => {
+                                                                            !isReordering && e.stopPropagation();
+                                                                        }}
+                                                                    >
+                                                                        Save
+                                                                    </button>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </SortableIndicator>
+                                            );
+                                        })
+                                    ) : (
+                                        <DisplayEmpty />
+                                    )}
+                                </SortableContext>
+                            </DndContext>
+                        </div>
+                    );
+                })}
+
                 {!competencyToEdit && (
                     <>
                         <div className="divider"></div>
@@ -273,6 +386,7 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                 )}
             </Card>
 
+            {/* Modals */}
             <dialog id="behavioralIndicatorModal" className="modal">
                 <div className="modal-box">
                     <h3 className="text-lg font-bold">New Behavioral Indicator</h3>
@@ -327,6 +441,7 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                     <button onClick={() => closeModal(modalIds.behavioralIndicatorModal)}>close</button>
                 </form>
             </dialog>
+
             <dialog id="deleteBehavioralIndicatorModal" className="modal">
                 <div className="modal-box">
                     <h3 className="text-lg font-bold">Delete Behavioral Indicator?</h3>

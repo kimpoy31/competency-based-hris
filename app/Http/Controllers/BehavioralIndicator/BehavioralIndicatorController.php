@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\BehavioralIndicator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class BehavioralIndicatorController extends Controller
 {
@@ -54,7 +56,7 @@ class BehavioralIndicatorController extends Controller
             ->where('proficiency_level_id',$validated['proficiency_level_id'])
             ->count();
 
-        $indicator = BehavioralIndicator::create([
+        BehavioralIndicator::create([
             'user_id' => $user->id,
             'proficiency_level_id' => $validated['proficiency_level_id'],
             'competency_id' => $validated['competency_id'],
@@ -63,4 +65,28 @@ class BehavioralIndicatorController extends Controller
             'source' => optional($user)->getPrimaryRole(),
         ]);
     }      
+
+    public function reorder(Request $request)
+    {
+        $validated = $request->validate([
+            'proficiency_level_id' => ['required', 'integer', 'exists:proficiency_levels,id'],
+            'ordered_ids' => ['required', 'array'],
+            'ordered_ids.*' => ['integer', 'exists:behavioral_indicators,id'],
+        ]);
+
+        $indicators = BehavioralIndicator::where('proficiency_level_id', $validated['proficiency_level_id'])
+            ->whereIn('id', $validated['ordered_ids'])
+            ->get()
+            ->keyBy('id');
+
+        foreach ($validated['ordered_ids'] as $index => $id) {
+            if (isset($indicators[$id])) {
+                $indicators[$id]->update(['order' => $index + 1]);
+            }
+        }
+
+        return back()->with('success', 'Indicators reordered successfully!');
+    }
+
+
 }

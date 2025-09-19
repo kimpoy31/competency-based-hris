@@ -28,7 +28,7 @@ const Show = ({ jobFamily, competencies }: Props) => {
                     </div>
                 </div>
                 {(competencies.length ?? 0) > 0 ? (
-                    <div className="flex w-full">
+                    <div className="flex w-full flex-col">
                         {competencies.map((competency) => (
                             <Link
                                 href={route(routes.competencies.edit, { jobFamilyId: jobFamily.id, competencyId: competency.id })}

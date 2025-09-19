@@ -27,6 +27,7 @@ export const routes = {
         update: 'behavioral-indicator.update',
         delete: 'behavioral-indicator.delete',
         store: 'behavioral-indicator.store',
+        reorder: 'behavioral-indicator.reorder',
     },
     dashboard: {
         index: 'dashboard',

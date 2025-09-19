@@ -45,13 +45,14 @@ class CompetencyController extends Controller
         ]);
     }
 
-    public function store(Request $request) {
-       $validated = $request->validate([
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
             'job_family_id' => ['required', 'exists:job_families,id'],
             'name'          => ['required', 'string'],
             'definition'    => ['required', 'string'],
             
-            'behavioralIndicators'   => ['required', 'array'],
+            'behavioralIndicators'   => ['array'],
             'behavioralIndicators.*.proficiency_level_id'=> ['required', 'integer', 'exists:proficiency_levels,id'],
             'behavioralIndicators.*.definition'          => ['required', 'string'],
             'behavioralIndicators.*.order'               => ['required', 'integer'],
@@ -60,27 +61,33 @@ class CompetencyController extends Controller
         $user = Auth::user();
         $roleName = optional($user)->getPrimaryRole();
 
-        DB::transaction(function () use ($validated, $user, $roleName) {
+        $competency = DB::transaction(function () use ($validated, $user, $roleName) {
             $competency = Competency::create([
-                'user_id' => $user->id,
+                'user_id'       => $user->id,
                 'job_family_id' => $validated['job_family_id'],
-                'name' => $validated['name'],
-                'definition' => $validated['definition'],
-                'source' => $roleName,
+                'name'          => $validated['name'],
+                'definition'    => $validated['definition'],
+                'source'        => $roleName,
             ]);
 
             foreach ($validated['behavioralIndicators'] as $indicator) {
                 BehavioralIndicator::create([
-                    'user_id' => $user->id,
-                    'proficiency_level_id' => $indicator['proficiency_level_id'],
-                    'competency_id' => $competency->id,
-                    'definition' => $indicator['definition'],
-                    'order' => $indicator['order'],
-                    'source' => $roleName,
+                    'user_id'             => $user->id,
+                    'proficiency_level_id'=> $indicator['proficiency_level_id'],
+                    'competency_id'       => $competency->id,
+                    'definition'          => $indicator['definition'],
+                    'order'               => $indicator['order'],
+                    'source'              => $roleName,
                 ]);
             }
+
+            return $competency;
         });
 
-
+        return to_route('competencies.edit', [
+            'jobFamilyId'  => $competency->job_family_id,
+            'competencyId' => $competency->id,
+        ]);
     }
+
 }
