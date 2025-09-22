@@ -94,3 +94,9 @@ export interface ProficiencyLevel {
     level: number;
     behavioral_indicators?: BehavioralIndicator[];
 }
+
+export interface Office {
+    id: number;
+    name: string;
+    deleted_at?: string | null;
+}

@@ -33,6 +33,11 @@ export const routes = {
     dashboard: {
         index: 'dashboard',
     },
+    offices: {
+        store: 'offices.store',
+        update: 'offices.update',
+        delete: 'offices.delete',
+    },
 };
 
 export const navRoutes = [
