@@ -18,6 +18,7 @@ export const routes = {
         store: 'competency.store',
         edit: 'competencies.edit',
         update: 'competency.update',
+        delete: 'competency.delete',
     },
     jobFamilies: {
         store: 'job-families.store',

@@ -11,20 +11,27 @@ import { router } from '@inertiajs/react';
 import { memo, useEffect, useState } from 'react';
 
 // Moved SortableIndicator outside the main component to prevent re-rendering issues
-const SortableIndicator = memo(({ indicator, children }: { indicator: BehavioralIndicator; children: React.ReactNode }) => {
-    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: indicator.id });
+const SortableIndicator = memo(
+    ({ indicator, children, isReordering }: { indicator: BehavioralIndicator; children: React.ReactNode; isReordering: boolean }) => {
+        if (!isReordering) {
+            // Normal (no drag handles, just a wrapper)
+            return <div>{children}</div>;
+        }
 
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-    };
+        const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: indicator.id });
 
-    return (
-        <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-            {children}
-        </div>
-    );
-});
+        const style = {
+            transform: CSS.Transform.toString(transform),
+            transition,
+        };
+
+        return (
+            <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+                {children}
+            </div>
+        );
+    },
+);
 
 interface Props {
     jobFamily: JobFamily;
@@ -35,7 +42,11 @@ interface Props {
 const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Props) => {
     const [behavioralIndicators, setBehavioralIndicators] = useState<BehavioralIndicator[]>(competencyToEdit?.behavioral_indicators ?? []);
     const [indicatorToRemove, setIndicatorToRemove] = useState<null | BehavioralIndicator>(null);
-    const modalIds = { behavioralIndicatorModal: 'behavioralIndicatorModal', deleteBehavioralIndicatorModal: 'deleteBehavioralIndicatorModal' };
+    const modalIds = {
+        behavioralIndicatorModal: 'behavioralIndicatorModal',
+        deleteBehavioralIndicatorModal: 'deleteBehavioralIndicatorModal',
+        deleteCompetencyModal: 'deleteCompetencyModal',
+    };
 
     const [isReordering, setIsReordering] = useState(false);
     const sensors = useSensors(useSensor(PointerSensor));
@@ -145,6 +156,14 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
             competency_id: competencyToEdit?.id,
             name: competencyFormData.name,
             definition: competencyFormData.definition,
+        });
+    };
+
+    const handleCompetencyDelete = async () => {
+        await router.delete(route(routes.competencies.delete, { competency_id: competencyToEdit?.id }), {
+            onSuccess: () => {
+                closeModal(modalIds.deleteCompetencyModal);
+            },
         });
     };
 
@@ -316,7 +335,7 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                                             let originalIndicatorFromDb = competencyToEdit?.behavioral_indicators?.find((i) => i.id === indicator.id);
 
                                             return (
-                                                <SortableIndicator key={indicator.id} indicator={indicator}>
+                                                <SortableIndicator key={indicator.id} indicator={indicator} isReordering={isReordering}>
                                                     <div className="mb-2 flex flex-col gap-2 border-l-6 border-l-primary bg-base-100 p-4 shadow">
                                                         <div className="flex items-start gap-4">
                                                             <span className="font-bold">
@@ -384,6 +403,16 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                         </div>
                     </>
                 )}
+                <div className="divider"></div>
+                <div className="flex flex-col items-start gap-3 lg:flex-row lg:items-center">
+                    <button className="btn btn-error" onClick={() => openModal(modalIds.deleteCompetencyModal)}>
+                        Delete Competency
+                    </button>
+                    <p className="text-sm text-error-content">
+                        This will deactivate (soft delete) this competency. It will no longer appear in the list or be usable, but it can be restored
+                        later by an administrator.
+                    </p>
+                </div>
             </Card>
 
             {/* Modals */}
@@ -475,6 +504,35 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                     >
                         close
                     </button>
+                </form>
+            </dialog>
+            <dialog id="deleteCompetencyModal" className="modal">
+                <div className="modal-box">
+                    <h3 className="text-lg font-bold">Delete Competency</h3>
+                    <p className="py-4">
+                        Are you sure you want to delete this competency <span className="font-bold">({competencyToEdit?.name})</span>?
+                    </p>
+                    <div className="modal-action">
+                        <button
+                            className="btn"
+                            onClick={() => {
+                                closeModal(modalIds.deleteCompetencyModal);
+                            }}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="btn btn-error"
+                            onClick={() => {
+                                handleCompetencyDelete();
+                            }}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
                 </form>
             </dialog>
         </MainLayout>

@@ -90,4 +90,14 @@ class CompetencyController extends Controller
         ]);
     }
 
+    public function delete(Request $request)
+    {
+        $competency = Competency::findOrFail($request->competency_id);
+        $jobFamilyId = $competency->job_family_id;
+        $competency->delete(); // soft delete
+        
+        return to_route('job-families.show',['jobFamilyId' => $jobFamilyId]);
+    }
+
+
 }

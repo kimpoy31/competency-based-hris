@@ -38,12 +38,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/job-families/{jobFamilyId}/competencies/{competencyId}', [CompetencyController::class , 'edit'])->name('competencies.edit');
     Route::post('/job-families/competency/store', [CompetencyController::class , 'store'])->name('competency.store');
     Route::post('/job-families/competency/update', [CompetencyController::class , 'update'])->name('competency.update');
+    Route::delete('/job-families/competency/delete', [CompetencyController::class , 'delete'])->name('competency.delete');
 
     // BEHAVIORAL INDICATOR
     Route::post('/behavioral-indicator/update', [BehavioralIndicatorController::class , 'update'])->name('behavioral-indicator.update');
     Route::delete('/behavioral-indicator/delete', [BehavioralIndicatorController::class , 'delete'])->name('behavioral-indicator.delete');
     Route::post('/behavioral-indicator/store', [BehavioralIndicatorController::class , 'store'])->name('behavioral-indicator.store');
     Route::post('/behavioral-indicator/reorder', [BehavioralIndicatorController::class , 'reorder'])->name('behavioral-indicator.reorder');
+  
 });
 
 // require __DIR__.'/settings.php';
