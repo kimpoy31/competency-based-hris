@@ -6,9 +6,12 @@ import OfficeTable from './components/OfficeTable';
 
 interface Props {
     offices: Office[];
+    employees: any;
 }
 
-const Index = ({ offices }: Props) => {
+const Index = ({ offices, employees }: Props) => {
+    console.log(employees);
+
     return (
         <MainLayout className="flex flex-col items-center gap-8">
             <AccountsTable />

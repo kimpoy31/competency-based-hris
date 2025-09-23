@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BehavioralIndicator\BehavioralIndicatorController;
@@ -26,6 +27,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ADMIN
     Route::get('/admin', [AdminController::class , 'index'])->name('admin.index');
+
+    // ACCOUNT
+    Route::get('/admin/account-create', [AccountController::class , 'create'])->name('account.create');
 
     // COMPETENCY TYPES
     Route::get('/competency-types', [TypesController::class , 'index'])->name('competencies.types.index');

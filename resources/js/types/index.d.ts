@@ -20,6 +20,7 @@ export interface User {
     created_at: string;
     updated_at: string;
     roles: Role[];
+    personal_data_sheet?: PersonalDataSheet;
     creator?: User;
     created_users?: User[];
 }
@@ -98,5 +99,14 @@ export interface ProficiencyLevel {
 export interface Office {
     id: number;
     name: string;
+    deleted_at?: string | null;
+}
+
+export interface PersonalDataSheet {
+    id: number;
+    firstname: string;
+    middlename: string | null;
+    lastname: string;
+    user?: User;
     deleted_at?: string | null;
 }

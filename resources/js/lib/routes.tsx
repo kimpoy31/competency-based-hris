@@ -9,6 +9,9 @@ export const routes = {
     admin: {
         index: 'admin.index',
     },
+    account: {
+        create: 'account.create',
+    },
     competencies: {
         types: {
             index: 'competencies.types.index',

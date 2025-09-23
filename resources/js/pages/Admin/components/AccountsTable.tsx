@@ -1,5 +1,7 @@
 import Card from '@/components/Card';
 import DisplayEmpty from '@/components/DisplayEmpty';
+import { routes } from '@/lib/routes';
+import { Link } from '@inertiajs/react';
 
 const AccountsTable = () => {
     return (
@@ -16,7 +18,8 @@ const AccountsTable = () => {
                             // value={search}
                             // onChange={(e) => setSearch(e.target.value)}
                         />
-                        <button
+                        <Link
+                            href={route(routes.account.create)}
                             className="btn btn-sm btn-neutral"
                             // onClick={() => {
                             //     setOfficeModalMode('create');
@@ -25,7 +28,7 @@ const AccountsTable = () => {
                             // }}
                         >
                             New Account
-                        </button>
+                        </Link>
                     </div>
                 </div>
                 <DisplayEmpty />
