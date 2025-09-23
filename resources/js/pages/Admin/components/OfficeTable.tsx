@@ -1,4 +1,5 @@
 import Card from '@/components/Card';
+import DisplayEmpty from '@/components/DisplayEmpty';
 import { routes } from '@/lib/routes';
 import { Office } from '@/types';
 import { router } from '@inertiajs/react';
@@ -78,17 +79,17 @@ const OfficeTable = ({ offices }: Props) => {
                         </button>
                     </div>
                 </div>
-                <div className="max-h-56 overflow-x-auto">
-                    <table className="table-pin-rows table-pin-cols table">
-                        <thead>
-                            <tr>
-                                <th>Office</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {filteredOffices.length > 0 ? (
-                                filteredOffices.map((office) => (
+                {filteredOffices.length > 0 ? (
+                    <div className="max-h-56 overflow-x-auto">
+                        <table className="table-pin-rows table-pin-cols table">
+                            <thead>
+                                <tr>
+                                    <th>Office</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {filteredOffices.map((office) => (
                                     <tr key={office.id}>
                                         <td>{office.name}</td>
                                         <td>
@@ -116,17 +117,13 @@ const OfficeTable = ({ offices }: Props) => {
                                             </div>
                                         </td>
                                     </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td colSpan={2} className="py-4 text-center text-gray-500">
-                                        No offices found
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                ) : (
+                    <DisplayEmpty />
+                )}
             </Card>
 
             {/* Modal */}
