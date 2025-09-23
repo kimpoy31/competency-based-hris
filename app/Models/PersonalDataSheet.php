@@ -12,6 +12,7 @@ class PersonalDataSheet extends Model
     
     protected $fillable = [
         'user_id',
+        'office_id',
         'firstname',
         'middlename',
         'lastname',
@@ -21,4 +22,10 @@ class PersonalDataSheet extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function office(): BelongsTo
+    {
+        return $this->belongsTo(Office::class);
+    }
+
 }

@@ -26,6 +26,7 @@ const AccountsTable = () => {
                             //     setOfficeModalData({ id: 0, name: '' });
                             //     openModal(modalIds.officeFormModal);
                             // }}
+                            disabled
                         >
                             New Account
                         </Link>

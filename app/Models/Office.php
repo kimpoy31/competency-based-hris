@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Office extends Model
@@ -12,4 +13,10 @@ class Office extends Model
     protected $fillable = [
         'name',
     ];
+
+    public function personalDataSheets(): HasMany
+    {
+        return $this->hasMany(PersonalDataSheet::class);
+    }
+
 }

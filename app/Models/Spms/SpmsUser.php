@@ -2,10 +2,10 @@
 
 namespace App\Models\Spms;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class SpmsUser extends Model
+class SpmsUser extends Authenticatable
 {
     protected $connection = 'ihris';
     protected $table = 'spms_accounts';
@@ -13,16 +13,16 @@ class SpmsUser extends Model
     // public $timestamps = false;
 
     protected $hidden = [
-        'password' ,
-        'remember_token'
+        'password',
+        'remember_token',
     ];
 
-    public function spmsEmployee() : BelongsTo
+    public function spmsEmployee(): BelongsTo
     {
         return $this->belongsTo(
             SpmsEmployee::class,
-            'employees_id',      // foreign key on spms_accounts
-            'employees_id'       // local key on employees table
+            'employees_id', // foreign key on spms_accounts
+            'employees_id'  // local key on employees table
         );
     }
 }

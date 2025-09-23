@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class UtilsController extends Controller
 {
-   public function search(Request $request)
+    public function search(Request $request)
     {
         $query = $request->input('q');
 
