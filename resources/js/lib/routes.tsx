@@ -41,6 +41,9 @@ export const routes = {
         update: 'offices.update',
         delete: 'offices.delete',
     },
+    spms: {
+        search: 'spms-accounts.search',
+    },
 };
 
 export const navRoutes = [

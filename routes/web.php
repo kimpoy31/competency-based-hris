@@ -8,6 +8,7 @@ use App\Http\Controllers\Competency\CompetencyController;
 use App\Http\Controllers\Competency\TypesController;
 use App\Http\Controllers\JobFamily\JobFamilyController;
 use App\Http\Controllers\Office\OfficeController;
+use App\Http\Controllers\UtilsController;
 use App\Models\JobFamily;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -55,6 +56,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/offices', [OfficeController::class, 'store'])->name('offices.store');
     Route::put('/offices/{office}', [OfficeController::class, 'update'])->name('offices.update');
     Route::delete('/offices/{office}', [OfficeController::class, 'destroy'])->name('offices.delete');
+
+
+    // SPMS
+    Route::get('/spms-accounts/search', [UtilsController::class, 'search'])
+    ->name('spms-accounts.search');
+
 });
 
 // require __DIR__.'/settings.php';
