@@ -99,6 +99,7 @@ export interface ProficiencyLevel {
 export interface Office {
     id: number;
     name: string;
+    alias: string;
     deleted_at?: string | null;
 }
 

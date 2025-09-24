@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             CompetencyTypeSeeder::class,
             ProficiencyLevelSeeder::class,
             OfficeSeeder::class,
+            CopySpmsAccountsToUserSeeder::class,
         ]);
     }
 }
