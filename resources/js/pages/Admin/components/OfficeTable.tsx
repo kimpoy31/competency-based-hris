@@ -58,8 +58,11 @@ const OfficeTable = ({ offices }: Props) => {
             <Card>
                 <div className="flex flex-wrap items-center justify-between gap-y-2">
                     <h1 className="card-title text-2xl font-bold text-base-content/75 uppercase">Offices</h1>
-                    <div className="card-actions flex gap-2">
-                        {/* 🔍 Search Field */}
+                </div>
+                {/* 🔍 Search Field */}
+                <fieldset className="fieldset">
+                    <legend className="fieldset-legend">Search</legend>
+                    <div className="flex gap-2">
                         <input
                             type="text"
                             placeholder="Search offices..."
@@ -78,7 +81,8 @@ const OfficeTable = ({ offices }: Props) => {
                             New Office
                         </button>
                     </div>
-                </div>
+                </fieldset>
+
                 {filteredOffices.length > 0 ? (
                     <div className="max-h-56 overflow-x-auto">
                         <table className="table-pin-rows table-pin-cols table table-zebra">
