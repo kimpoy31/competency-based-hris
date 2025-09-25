@@ -30,7 +30,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/admin', [AdminController::class , 'index'])->name('admin.index');
 
     // ACCOUNT
-    Route::get('/admin/account-create', [AccountController::class , 'create'])->name('account.create');
+    Route::get('/admin/accounts/{userId}', [AccountController::class , 'update'])->name('account.update');
+    Route::patch('/admin/accounts/edit', [AccountController::class , 'edit'])->name('account.edit');
 
     // COMPETENCY TYPES
     Route::get('/competency-types', [TypesController::class , 'index'])->name('competencies.types.index');

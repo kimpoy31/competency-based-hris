@@ -10,7 +10,8 @@ export const routes = {
         index: 'admin.index',
     },
     account: {
-        create: 'account.create',
+        update: 'account.update',
+        edit: 'account.edit',
     },
     competencies: {
         types: {

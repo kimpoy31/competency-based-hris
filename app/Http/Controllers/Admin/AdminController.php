@@ -34,7 +34,7 @@ class AdminController extends Controller
             });
         }
 
-        $users = $query->with('personalDataSheet.office')
+        $users = $query->with(['personalDataSheet.office','roles'])
                     ->paginate(10, ['*'], 'accounts_table')
                     ->withQueryString();
 

@@ -78,7 +78,7 @@ const AccountsTable = ({ accounts_paginated: { data, next_page_url, prev_page_ur
                             <th className="lg:hidden">Action</th>
                             <th>Name</th>
                             <th>Office</th>
-                            <th>Username</th>
+                            <th>Roles</th>
                             <th className="hidden lg:block">Action</th>
                         </tr>
                     </thead>
@@ -90,9 +90,11 @@ const AccountsTable = ({ accounts_paginated: { data, next_page_url, prev_page_ur
                                 </td>
                                 <td>{user.personal_data_sheet?.fullname}</td>
                                 <td>{user.personal_data_sheet?.office?.alias}</td>
-                                <td>{user.username}</td>
+                                <td className="capitalize">{user.roles.map((role) => role.name.replace('_', ' ')).join(', ')}</td>
                                 <td className="hidden lg:block">
-                                    <button className="btn btn-sm btn-secondary">Details</button>
+                                    <Link href={route(routes.account.update, { userId: user.id })} className="btn btn-sm btn-secondary">
+                                        Details
+                                    </Link>
                                 </td>
                             </tr>
                         ))}
