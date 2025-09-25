@@ -1,6 +1,6 @@
 import Card from '@/components/Card';
 import { routes } from '@/lib/routes';
-import { Office, User } from '@/types';
+import { Office, Role, User } from '@/types';
 import { Link, router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
@@ -16,17 +16,19 @@ interface Props {
         total?: number;
     };
     offices: Office[];
-    filters?: {
-        search?: string;
-        office_id?: string;
-    };
+    roles: Role[];
 }
 
-const AccountsTable = ({ accounts_paginated: { data, next_page_url, prev_page_url, current_page, last_page, from, to, total }, offices }: Props) => {
+const AccountsTable = ({
+    accounts_paginated: { data, next_page_url, prev_page_url, current_page, last_page, from, to, total },
+    offices,
+    roles,
+}: Props) => {
     const [officeIdFilter, setOfficeIdFilter] = useState<string>('');
     const [searchFilter, setSearchFilter] = useState<string>('');
+    const [roleIdFilter, setRoleIdFilter] = useState<string>('');
 
-    const filterTable = async (officeId?: string, search?: string) => {
+    const filterTable = async (officeId?: string, search?: string, roleIdFilter?: string) => {
         const params: Record<string, string> = {};
 
         if (officeId) {
@@ -37,12 +39,16 @@ const AccountsTable = ({ accounts_paginated: { data, next_page_url, prev_page_ur
             params.search = search;
         }
 
+        if (roleIdFilter) {
+            params.role_id = roleIdFilter;
+        }
+
         await router.get(route(routes.admin.index), params, { preserveState: true, preserveScroll: true });
     };
 
     useEffect(() => {
-        filterTable(officeIdFilter, searchFilter);
-    }, [officeIdFilter, searchFilter]);
+        filterTable(officeIdFilter, searchFilter, roleIdFilter);
+    }, [officeIdFilter, searchFilter, roleIdFilter]);
 
     return (
         <Card>
@@ -55,6 +61,17 @@ const AccountsTable = ({ accounts_paginated: { data, next_page_url, prev_page_ur
                         {offices.map((office) => (
                             <option key={office.id} value={office.id}>
                                 {office.alias}
+                            </option>
+                        ))}
+                    </select>
+                </fieldset>
+                <fieldset className="fieldset">
+                    <legend className="fieldset-legend">Role</legend>
+                    <select value={roleIdFilter} onChange={(e) => setRoleIdFilter(e.target.value)} className="select w-28 select-sm">
+                        <option value={''}>No Filter</option>
+                        {roles.map((role) => (
+                            <option key={role.id} value={role.id} className="capitalize">
+                                {role.name.replace('_', ' ')}
                             </option>
                         ))}
                     </select>

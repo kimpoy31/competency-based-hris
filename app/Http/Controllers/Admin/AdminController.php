@@ -22,6 +22,10 @@ class AdminController extends Controller
             $query->whereHas('personalDataSheet', fn($q) => $q->where('office_id', $request->office_id));
         }
 
+        if ($request->filled('role_id')) {
+            $query->whereHas('roles', fn($q) => $q->where('id', $request->role_id));
+        }
+
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -41,7 +45,8 @@ class AdminController extends Controller
         return Inertia::render('Admin/Index', [
             'offices' => Office::all(),
             'accounts_paginated' => $users,
-            'filters' => $request->only(['search', 'office_id']) // Pass filters back
+            'filters' => $request->only(['search', 'office_id']), // Pass filters back
+            'roles' => Role::where('name', '!=', 'super_admin')->get()
         ]);
     }
 
