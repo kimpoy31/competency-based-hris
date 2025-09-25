@@ -1,8 +1,8 @@
 import Card from '@/components/Card';
 import MainLayout from '@/layouts/MainLayout';
 import { routes } from '@/lib/routes';
-import { Office, Role, User } from '@/types';
-import { router } from '@inertiajs/react';
+import { Office, Role, SharedData, User } from '@/types';
+import { router, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 interface Props {
@@ -12,6 +12,7 @@ interface Props {
 }
 
 const AccountForm = ({ user: { personal_data_sheet, roles: userRolesFromProps, id: userId }, offices, roles }: Props) => {
+    const { user } = usePage<SharedData>().props.auth;
     const [userInfo, setUserInfo] = useState({
         firstname: personal_data_sheet?.firstname,
         middlename: personal_data_sheet?.middlename,
@@ -38,7 +39,7 @@ const AccountForm = ({ user: { personal_data_sheet, roles: userRolesFromProps, i
         const bIds = b.map((r) => r.id).sort();
         return JSON.stringify(aIds) === JSON.stringify(bIds);
     };
-    const hasRoleChanges = !areRolesEqual(userRoles, userRolesFromProps);
+    const hasRoleChanges = !areRolesEqual(userRoles, userRolesFromProps ?? []);
     const hasInfoChanges =
         userInfo.firstname !== personal_data_sheet?.firstname ||
         userInfo.middlename !== (personal_data_sheet?.middlename ?? '') ||
@@ -60,6 +61,8 @@ const AccountForm = ({ user: { personal_data_sheet, roles: userRolesFromProps, i
             roles: userRoles.map((r) => r.id),
         });
     };
+
+    console.log('user:', user);
 
     return (
         <MainLayout>
@@ -118,6 +121,7 @@ const AccountForm = ({ user: { personal_data_sheet, roles: userRolesFromProps, i
                                     className="checkbox"
                                     onChange={(e) => handleRoleSelect(role)}
                                     checked={userRoles.some((r) => r.id === role.id)}
+                                    disabled={!user.roles.some((r) => r.name === 'super_admin') && role.name === 'office_admin'}
                                 />
                                 {role.name.replace('_', ' ')}
                             </label>

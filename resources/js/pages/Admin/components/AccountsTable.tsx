@@ -107,7 +107,7 @@ const AccountsTable = ({
                                 </td>
                                 <td>{user.personal_data_sheet?.fullname}</td>
                                 <td>{user.personal_data_sheet?.office?.alias}</td>
-                                <td className="capitalize">{user.roles.map((role) => role.name.replace('_', ' ')).join(', ')}</td>
+                                <td className="capitalize">{user.roles?.map((role) => role.name.replace('_', ' ')).join(', ')}</td>
                                 <td className="hidden lg:block">
                                     <Link href={route(routes.account.update, { userId: user.id })} className="btn btn-sm btn-secondary">
                                         Details

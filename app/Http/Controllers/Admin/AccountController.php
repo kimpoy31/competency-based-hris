@@ -7,6 +7,7 @@ use App\Models\Office;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AccountController extends Controller
@@ -41,10 +42,27 @@ class AccountController extends Controller
             'office_id' => $validated['office_id']
         ]);
 
+        $authUser = Auth::user();
+
+        // If not super admin, prevent assigning/removing office_admin
+        if (!$authUser->roles->contains('name', 'super_admin')) {
+            $officeAdminId = Role::where('name', 'office_admin')->value('id');
+
+            // Always keep office_admin if the user already has it
+            if ($user->roles->contains('id', $officeAdminId)) {
+                $validated['roles'][] = $officeAdminId;
+            }
+
+            // Also make sure office_admin isn't added if it wasn't there
+            $validated['roles'] = collect($validated['roles'])
+                ->unique()
+                ->reject(fn ($roleId) => $roleId == $officeAdminId && !$user->roles->contains('id', $officeAdminId))
+                ->values()
+                ->toArray();
+        }
+
         // Sync roles
         $user->roles()->sync($validated['roles']);
-
-        // return response()->json(['message' => 'User updated successfully']);
     }
 
 
