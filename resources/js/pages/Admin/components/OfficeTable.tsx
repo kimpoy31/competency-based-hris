@@ -1,8 +1,8 @@
 import Card from '@/components/Card';
 import DisplayEmpty from '@/components/DisplayEmpty';
 import { routes } from '@/lib/routes';
-import { Office } from '@/types';
-import { router } from '@inertiajs/react';
+import { Office, SharedData } from '@/types';
+import { router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
 }
 
 const OfficeTable = ({ offices }: Props) => {
+    const { user } = usePage<SharedData>().props.auth;
     const modalIds = { officeFormModal: 'officeFormModal' };
     const [officeModalMode, setOfficeModalMode] = useState<'create' | 'edit' | 'delete' | null>(null);
     const [officeModalData, setOfficeModalData] = useState<Office>({ id: 0, name: '', alias: '' });
@@ -70,16 +71,18 @@ const OfficeTable = ({ offices }: Props) => {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                         />
-                        <button
-                            className="btn btn-sm btn-neutral"
-                            onClick={() => {
-                                setOfficeModalMode('create');
-                                setOfficeModalData({ id: 0, name: '', alias: '' });
-                                openModal(modalIds.officeFormModal);
-                            }}
-                        >
-                            New Office
-                        </button>
+                        {user.roles.some((role) => role.name === 'super_admin') && (
+                            <button
+                                className="btn btn-sm btn-neutral"
+                                onClick={() => {
+                                    setOfficeModalMode('create');
+                                    setOfficeModalData({ id: 0, name: '', alias: '' });
+                                    openModal(modalIds.officeFormModal);
+                                }}
+                            >
+                                New Office
+                            </button>
+                        )}
                     </div>
                 </fieldset>
 
@@ -90,7 +93,7 @@ const OfficeTable = ({ offices }: Props) => {
                                 <tr>
                                     <th className="lg:hidden">Action</th>
                                     <th>Office</th>
-                                    <th className="hidden lg:block">Action</th>
+                                    {user.roles.some((role) => role.name === 'super_admin') && <th className="hidden lg:block">Action</th>}
                                 </tr>
                             </thead>
                             <tbody>
@@ -121,30 +124,32 @@ const OfficeTable = ({ offices }: Props) => {
                                             </div>
                                         </td>
                                         <td>{office.name}</td>
-                                        <td className="hidden lg:block">
-                                            <div className="flex gap-1">
-                                                <button
-                                                    className="btn btn-sm"
-                                                    onClick={() => {
-                                                        setOfficeModalMode('edit');
-                                                        setOfficeModalData(office);
-                                                        openModal(modalIds.officeFormModal);
-                                                    }}
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    className="btn btn-sm btn-error"
-                                                    onClick={() => {
-                                                        setOfficeModalMode('delete');
-                                                        setOfficeModalData(office);
-                                                        openModal(modalIds.officeFormModal);
-                                                    }}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </td>
+                                        {user.roles.some((role) => role.name === 'super_admin') && (
+                                            <td className="hidden lg:block">
+                                                <div className="flex gap-1">
+                                                    <button
+                                                        className="btn btn-sm"
+                                                        onClick={() => {
+                                                            setOfficeModalMode('edit');
+                                                            setOfficeModalData(office);
+                                                            openModal(modalIds.officeFormModal);
+                                                        }}
+                                                    >
+                                                        Edit
+                                                    </button>
+                                                    <button
+                                                        className="btn btn-sm btn-error"
+                                                        onClick={() => {
+                                                            setOfficeModalMode('delete');
+                                                            setOfficeModalData(office);
+                                                            openModal(modalIds.officeFormModal);
+                                                        }}
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))}
                             </tbody>
