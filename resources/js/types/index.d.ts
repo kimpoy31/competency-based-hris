@@ -105,9 +105,12 @@ export interface Office {
 
 export interface PersonalDataSheet {
     id: number;
+    office_id: number;
     firstname: string;
     middlename: string | null;
     lastname: string;
+    fullname: string;
     user?: User;
+    office?: Office;
     deleted_at?: string | null;
 }

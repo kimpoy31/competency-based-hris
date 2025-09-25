@@ -2,19 +2,20 @@ import MainLayout from '@/layouts/MainLayout';
 import { Office } from '@/types';
 import AccountsTable from './components/AccountsTable';
 import OfficeTable from './components/OfficeTable';
-// import { router } from '@inertiajs/react'; // Uncomment when hooking backend
 
 interface Props {
     offices: Office[];
-    employees: any;
+    accounts_paginated: any;
+    filters?: {
+        search?: string;
+        office_id?: string;
+    };
 }
 
-const Index = ({ offices, employees }: Props) => {
-    console.log(employees);
-
+const Index = ({ offices, accounts_paginated, filters = {} }: Props) => {
     return (
         <MainLayout className="flex flex-col items-center gap-8">
-            <AccountsTable />
+            <AccountsTable accounts_paginated={accounts_paginated} offices={offices} filters={filters} />
             <OfficeTable offices={offices} />
         </MainLayout>
     );

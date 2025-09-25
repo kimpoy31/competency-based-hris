@@ -12,7 +12,7 @@ interface Props {
 const OfficeTable = ({ offices }: Props) => {
     const modalIds = { officeFormModal: 'officeFormModal' };
     const [officeModalMode, setOfficeModalMode] = useState<'create' | 'edit' | 'delete' | null>(null);
-    const [officeModalData, setOfficeModalData] = useState<Office>({ id: 0, name: '' });
+    const [officeModalData, setOfficeModalData] = useState<Office>({ id: 0, name: '', alias: '' });
     const [localOffices, setLocalOffices] = useState<Office[]>(offices);
     const [search, setSearch] = useState<string>(''); // 🔍 search state
 
@@ -41,7 +41,7 @@ const OfficeTable = ({ offices }: Props) => {
             await router.delete(route(routes.offices.delete, { office: officeModalData.id }));
         }
 
-        setOfficeModalData({ id: 0, name: '' });
+        setOfficeModalData({ id: 0, name: '', alias: '' });
         setOfficeModalMode(null);
         closeModal(modalIds.officeFormModal);
     };
@@ -56,7 +56,7 @@ const OfficeTable = ({ offices }: Props) => {
     return (
         <>
             <Card>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-y-2">
                     <h1 className="card-title text-2xl font-bold text-base-content/75 uppercase">Offices</h1>
                     <div className="card-actions flex gap-2">
                         {/* 🔍 Search Field */}
@@ -71,7 +71,7 @@ const OfficeTable = ({ offices }: Props) => {
                             className="btn btn-sm btn-neutral"
                             onClick={() => {
                                 setOfficeModalMode('create');
-                                setOfficeModalData({ id: 0, name: '' });
+                                setOfficeModalData({ id: 0, name: '', alias: '' });
                                 openModal(modalIds.officeFormModal);
                             }}
                         >
@@ -81,18 +81,43 @@ const OfficeTable = ({ offices }: Props) => {
                 </div>
                 {filteredOffices.length > 0 ? (
                     <div className="max-h-56 overflow-x-auto">
-                        <table className="table-pin-rows table-pin-cols table">
+                        <table className="table-pin-rows table-pin-cols table table-zebra">
                             <thead>
                                 <tr>
+                                    <th className="lg:hidden">Action</th>
                                     <th>Office</th>
-                                    <th>Action</th>
+                                    <th className="hidden lg:block">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {filteredOffices.map((office) => (
                                     <tr key={office.id}>
+                                        <td className="lg:hidden">
+                                            <div className="flex gap-1">
+                                                <button
+                                                    className="btn btn-sm"
+                                                    onClick={() => {
+                                                        setOfficeModalMode('edit');
+                                                        setOfficeModalData(office);
+                                                        openModal(modalIds.officeFormModal);
+                                                    }}
+                                                >
+                                                    Edit
+                                                </button>
+                                                <button
+                                                    className="btn btn-sm btn-error"
+                                                    onClick={() => {
+                                                        setOfficeModalMode('delete');
+                                                        setOfficeModalData(office);
+                                                        openModal(modalIds.officeFormModal);
+                                                    }}
+                                                >
+                                                    Delete
+                                                </button>
+                                            </div>
+                                        </td>
                                         <td>{office.name}</td>
-                                        <td>
+                                        <td className="hidden lg:block">
                                             <div className="flex gap-1">
                                                 <button
                                                     className="btn btn-sm"
@@ -156,7 +181,7 @@ const OfficeTable = ({ offices }: Props) => {
                             className="btn"
                             onClick={() => {
                                 setOfficeModalMode(null);
-                                setOfficeModalData({ id: 0, name: '' });
+                                setOfficeModalData({ id: 0, name: '', alias: '' });
                                 closeModal(modalIds.officeFormModal);
                             }}
                         >

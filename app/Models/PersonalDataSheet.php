@@ -18,6 +18,9 @@ class PersonalDataSheet extends Model
         'lastname',
     ];
 
+    // Make fullname available in array/JSON outputs
+    protected $appends = ['fullname'];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -28,4 +31,16 @@ class PersonalDataSheet extends Model
         return $this->belongsTo(Office::class);
     }
 
+    // Accessor for full name
+    public function getFullnameAttribute(): string
+    {
+        $parts = [
+            $this->firstname,
+            $this->middlename,
+            $this->lastname,
+        ];
+
+        // Remove empty parts and join with space
+        return implode(' ', array_filter($parts));
+    }
 }
