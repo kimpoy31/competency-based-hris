@@ -47,6 +47,7 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
         behavioralIndicatorModal: 'behavioralIndicatorModal',
         deleteBehavioralIndicatorModal: 'deleteBehavioralIndicatorModal',
         deleteCompetencyModal: 'deleteCompetencyModal',
+        takeOwnerShipModal: 'takeOwnerShipModal',
     };
 
     const [isReordering, setIsReordering] = useState(false);
@@ -189,6 +190,18 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
         });
     };
 
+    const handleTakeOwnerShip = async () => {
+        await router.post(
+            route(routes.competencies.updateOwnership),
+            { competency_id: competencyToEdit?.id },
+            {
+                onSuccess: () => {
+                    closeModal(modalIds.takeOwnerShipModal);
+                },
+            },
+        );
+    };
+
     const saveReorderedIndicator = async (proficiencyLevelId: number) => {
         if (!competencyToEdit) {
             return;
@@ -215,7 +228,13 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
             <Card>
                 <div className="block w-full">
                     <h1 className="text-4xl font-bold uppercase">{jobFamily.name}</h1>
-                    <h1 className="font-semibold uppercase italic">{jobFamily.competency_type?.name}</h1>
+                    <h1 className="font-semibold uppercase italic">{jobFamily.competency_type?.name} Competency</h1>
+                    {competencyToEdit?.source !== 'super_admin' && (
+                        <h1 className="mt-2 uppercase italic">
+                            Suggested by: {competencyToEdit?.user?.personal_data_sheet?.fullname} - (
+                            {competencyToEdit?.user?.personal_data_sheet?.office?.alias}){' '}
+                        </h1>
+                    )}
                 </div>
                 <div className="divider my-0"></div>
                 <h1 className="text-lg font-bold text-base-content/75 uppercase">Competency</h1>
@@ -236,6 +255,7 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                         onChange={(e) => setCompetencyFormData((prev) => ({ ...prev, definition: e.target.value }))}
                     ></textarea>
                 </fieldset>
+
                 {competencyToEdit && (
                     <div className="flex justify-end">
                         <button
@@ -249,6 +269,7 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                         </button>
                     </div>
                 )}
+
                 <div className="divider"></div>
                 <div className="flex flex-col justify-between lg:flex-row">
                     <h1 className="text-lg font-bold text-base-content/75 uppercase">Behavioral Indicators</h1>
@@ -414,13 +435,17 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                 {competencyToEdit && (
                     <>
                         <div className="divider"></div>
-                        <div className="flex flex-col items-start gap-3 lg:flex-row lg:items-center">
-                            <button className="btn btn-warning">Take Ownership</button>
-                            <p className="text-sm text-warning-content">
-                                This will transfer the competency’s ownership from the current user to you (Super Admin). The user will no longer be
-                                able to manage this competency directly.
-                            </p>
-                        </div>
+                        {competencyToEdit.source !== 'super_admin' && (
+                            <div className="flex flex-col items-start gap-3 lg:flex-row lg:items-center">
+                                <button className="btn btn-warning" onClick={() => openModal(modalIds.takeOwnerShipModal)}>
+                                    Take Ownership
+                                </button>
+                                <p className="text-sm text-warning-content">
+                                    This will transfer the competency’s ownership from the current user to you (Super Admin). The user will no longer
+                                    be able to manage this competency directly.
+                                </p>
+                            </div>
+                        )}
                         <div className="divider"></div>
                         <div className="flex flex-col items-start gap-3 lg:flex-row lg:items-center">
                             <button className="btn btn-error" onClick={() => openModal(modalIds.deleteCompetencyModal)}>
@@ -548,6 +573,35 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                             }}
                         >
                             Delete
+                        </button>
+                    </div>
+                </div>
+                <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                </form>
+            </dialog>
+            <dialog id="takeOwnerShipModal" className="modal">
+                <div className="modal-box">
+                    <h3 className="text-lg font-bold">Take Ownership</h3>
+                    <p className="py-4">
+                        Are you sure you want to take ownership of this competency <span className="font-bold">({competencyToEdit?.name})</span>?
+                    </p>
+                    <div className="modal-action">
+                        <button
+                            className="btn"
+                            onClick={() => {
+                                closeModal(modalIds.takeOwnerShipModal);
+                            }}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            className="btn btn-neutral"
+                            onClick={() => {
+                                handleTakeOwnerShip();
+                            }}
+                        >
+                            Confirm
                         </button>
                     </div>
                 </div>

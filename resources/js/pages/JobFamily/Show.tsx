@@ -43,20 +43,23 @@ const Show = ({ jobFamily, competencies, suggested_competencies }: Props) => {
                 ) : (
                     <DisplayEmpty />
                 )}
-                <h1 className="mt-4 text-sm font-bold text-base-content/75 uppercase italic">Suggested Competencies</h1>
                 {suggested_competencies.length > 0 &&
                     suggested_competencies.map((competency) => (
-                        <Link
-                            href={route(routes.competencies.edit, { jobFamilyId: jobFamily.id, competencyId: competency.id })}
-                            key={competency.id}
-                            className="mb-2 flex w-full cursor-pointer flex-col gap-2 border-l-6 border-l-neutral bg-base-100 p-4 font-semibold uppercase shadow hover:bg-base-200/80"
-                        >
-                            {competency.name}
-                            <h1 className="text-xs italic">
-                                Suggested by: {competency.user?.personal_data_sheet?.fullname} - (
-                                {competency.user?.personal_data_sheet?.office?.alias})
-                            </h1>
-                        </Link>
+                        <>
+                            <h1 className="mt-4 text-sm font-bold text-base-content/75 uppercase italic">Suggested Competencies</h1>
+
+                            <Link
+                                href={route(routes.competencies.edit, { jobFamilyId: jobFamily.id, competencyId: competency.id })}
+                                key={competency.id}
+                                className="mb-2 flex w-full cursor-pointer flex-col gap-2 border-l-6 border-l-neutral bg-base-100 p-4 font-semibold uppercase shadow hover:bg-base-200/80"
+                            >
+                                {competency.name}
+                                <h1 className="text-xs italic">
+                                    Suggested by: {competency.user?.personal_data_sheet?.fullname} - (
+                                    {competency.user?.personal_data_sheet?.office?.alias})
+                                </h1>
+                            </Link>
+                        </>
                     ))}
             </Card>
         </MainLayout>

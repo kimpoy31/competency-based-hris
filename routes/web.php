@@ -46,6 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/job-families/competency/store', [CompetencyController::class , 'store'])->name('competency.store');
     Route::post('/job-families/competency/update', [CompetencyController::class , 'update'])->name('competency.update');
     Route::delete('/job-families/competency/delete', [CompetencyController::class , 'delete'])->name('competency.delete');
+    Route::post('/job-families/competency/update-ownership', [CompetencyController::class , 'updateOwnership'])->name('competency.updateOwnership');
 
     // BEHAVIORAL INDICATOR
     Route::post('/behavioral-indicator/update', [BehavioralIndicatorController::class , 'update'])->name('behavioral-indicator.update');

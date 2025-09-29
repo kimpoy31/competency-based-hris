@@ -26,7 +26,7 @@ class CompetencyController extends Controller
         return Inertia::render('Competency/CompetencyForm',[
             'jobFamily' => JobFamily::with('competencyType')->with('competencies.behavioralIndicators')->find($jobFamilyId),
             'proficiencyLevels' => ProficiencyLevel::all(), 
-            'competencyToEdit' => Competency::with('behavioralIndicators')->find($competencyId),
+            'competencyToEdit' => Competency::with(['behavioralIndicators','user.personalDataSheet.office'])->find($competencyId),
         ]);
     }
 
@@ -42,6 +42,21 @@ class CompetencyController extends Controller
         $competency->update([
             'name' => $validated['name'],
             'definition' => $validated['definition'],
+        ]);
+    }
+
+    public function updateOwnership (Request $request) {
+        $validated = $request->validate([
+            'competency_id' =>  ['required', 'integer', 'exists:competencies,id'],
+        ]);
+
+        $competency = Competency::find($validated['competency_id']);
+
+        $user = Auth::user();
+        $roleName = optional($user)->getPrimaryRole();
+
+        $competency->update([
+            'source' => $roleName,
         ]);
     }
 
