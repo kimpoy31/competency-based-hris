@@ -403,16 +403,20 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                         </div>
                     </>
                 )}
-                <div className="divider"></div>
-                <div className="flex flex-col items-start gap-3 lg:flex-row lg:items-center">
-                    <button className="btn btn-error" onClick={() => openModal(modalIds.deleteCompetencyModal)}>
-                        Delete Competency
-                    </button>
-                    <p className="text-sm text-error-content">
-                        This will deactivate (soft delete) this competency. It will no longer appear in the list or be usable, but it can be restored
-                        later by an administrator.
-                    </p>
-                </div>
+                {competencyToEdit && (
+                    <>
+                        <div className="divider"></div>
+                        <div className="flex flex-col items-start gap-3 lg:flex-row lg:items-center">
+                            <button className="btn btn-error" onClick={() => openModal(modalIds.deleteCompetencyModal)}>
+                                Delete Competency
+                            </button>
+                            <p className="text-sm text-error-content">
+                                This will deactivate (soft delete) this competency. It will no longer appear in the list or be usable, but it can be
+                                restored later by an administrator.
+                            </p>
+                        </div>
+                    </>
+                )}
             </Card>
 
             {/* Modals */}

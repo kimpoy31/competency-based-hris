@@ -55,9 +55,11 @@ export const navRoutes = [
     {
         name: 'Admin',
         href: routes.admin.index,
+        indicator: 'Admin',
     },
     {
-        name: 'Manage',
+        name: 'Competencies',
         href: routes.competencies.types.index,
+        indicator: 'Admin',
     },
 ];

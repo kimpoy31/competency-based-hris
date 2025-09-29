@@ -39,3 +39,27 @@
 html {
     @apply bg-base-100/90!;
 }
+
+@font-face {
+    font-family: 'font-carter-one';
+    src: url('fonts/CarterOne-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'font-yesteryear';
+    src: url('fonts/Yesteryear-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+}
+
+.font-carter-one {
+    font-family: 'font-carter-one', sans-serif;
+}
+
+.font-yesteryear {
+    font-family: 'font-yesteryear', sans-serif;
+}
