@@ -28,7 +28,10 @@ class OfficeController extends Controller
             ],
         ]);
 
-        Office::create($validated);
+        Office::create([
+            'id'   => Office::max('id') + 1, // manually assign next ID
+            'name' => $validated['name'],
+        ]);
 
         return back()->with('success', 'Office created successfully.');
     }
