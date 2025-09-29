@@ -41,6 +41,7 @@ interface Props {
 
 const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Props) => {
     const [behavioralIndicators, setBehavioralIndicators] = useState<BehavioralIndicator[]>(competencyToEdit?.behavioral_indicators ?? []);
+    const [backupIndicators, setBackupIndicators] = useState<BehavioralIndicator[]>([]);
     const [indicatorToRemove, setIndicatorToRemove] = useState<null | BehavioralIndicator>(null);
     const modalIds = {
         behavioralIndicatorModal: 'behavioralIndicatorModal',
@@ -253,7 +254,13 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                     <h1 className="text-lg font-bold text-base-content/75 uppercase">Behavioral Indicators</h1>
                     <div className="flex gap-1">
                         {!isReordering ? (
-                            <button className="btn btn-outline btn-sm" onClick={() => setIsReordering(true)}>
+                            <button
+                                className="btn btn-outline btn-sm"
+                                onClick={() => {
+                                    setBackupIndicators(JSON.parse(JSON.stringify(behavioralIndicators)));
+                                    setIsReordering(true);
+                                }}
+                            >
                                 Reorder
                             </button>
                         ) : (
@@ -273,7 +280,7 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                                 <button
                                     className="btn btn-sm"
                                     onClick={() => {
-                                        setBehavioralIndicators(competencyToEdit?.behavioral_indicators ?? []);
+                                        setBehavioralIndicators(backupIndicators); // restore snapshot
                                         setIsReordering(false);
                                     }}
                                 >
@@ -286,6 +293,7 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                             onClick={() => {
                                 openModal(modalIds.behavioralIndicatorModal);
                             }}
+                            disabled={isReordering}
                         >
                             New Indicator +
                         </button>
@@ -407,11 +415,19 @@ const CompetencyForm = ({ jobFamily, proficiencyLevels, competencyToEdit }: Prop
                     <>
                         <div className="divider"></div>
                         <div className="flex flex-col items-start gap-3 lg:flex-row lg:items-center">
+                            <button className="btn btn-warning">Take Ownership</button>
+                            <p className="text-sm text-warning-content">
+                                This will transfer the competency’s ownership from the current user to you (Super Admin). The user will no longer be
+                                able to manage this competency directly.
+                            </p>
+                        </div>
+                        <div className="divider"></div>
+                        <div className="flex flex-col items-start gap-3 lg:flex-row lg:items-center">
                             <button className="btn btn-error" onClick={() => openModal(modalIds.deleteCompetencyModal)}>
                                 Delete Competency
                             </button>
                             <p className="text-sm text-error-content">
-                                This will deactivate (soft delete) this competency. It will no longer appear in the list or be usable, but it can be
+                                This will deactivate (soft delete) the competency. It will no longer appear in the list or be usable, but it can be
                                 restored later by an administrator.
                             </p>
                         </div>

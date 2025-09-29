@@ -53,7 +53,7 @@ const Index = ({ competencyTypes }: Props) => {
 
     return (
         <MainLayout>
-            <div className="flex w-full flex-col items-center gap-8">
+            <div className="flex w-full flex-col items-center gap-4">
                 {competencyTypes.map((type) => (
                     <Card key={type.id}>
                         <div className="flex flex-col justify-between lg:flex-row">

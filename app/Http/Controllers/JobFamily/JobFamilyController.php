@@ -36,9 +36,15 @@ class JobFamilyController extends Controller
             ->where('job_family_id', $jobFamilyId)
             ->get();
 
+        $suggestedCompetencies = Competency::whereNot('source', ['super_admin', 'system'])
+            ->with('user.personalDataSheet.office')
+            ->where('job_family_id', $jobFamilyId)
+            ->get();
+
         return Inertia::render('JobFamily/Show', [
             'jobFamily' => $jobFamily,
             'competencies' => $competencies,
+            'suggested_competencies' => $suggestedCompetencies,
         ]);
     }
 
